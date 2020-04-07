@@ -4,6 +4,13 @@ require_relative '../../error'
 
 module Spud::BuildTools
   module SpudBuild
+    def self.join_args(*args)
+      args
+        .map
+        .with_index { |arg, i| !i.zero? && arg.is_a?(String) && arg.include?("\s") ? "'#{arg}'" : arg }
+        .join(' ')
+    end
+
     class RuleContext
       def initialize(spud, file_context)
         @spud = spud
@@ -16,10 +23,12 @@ module Spud::BuildTools
       def sh(*args)
         out = sh?(*args)
         raise ShellError unless out.status.exitstatus.zero?
+
+        out
       end
 
       def sh?(*args)
-        cmd = args.join(' ')
+        cmd = SpudBuild.join_args(*args)
         puts cmd
 
         out = Spud::Shell.cmd(cmd)
@@ -31,10 +40,12 @@ module Spud::BuildTools
       def shh(*args)
         out = shh?(*args)
         raise ShellError unless out.status.exitstatus.zero?
+
+        out
       end
 
       def shh?(*args)
-        out = Spud::Shell.cmd(args.join(' '))
+        out = Spud::Shell.cmd(SpudBuild.join_args(*args))
         puts out
 
         out
@@ -43,22 +54,17 @@ module Spud::BuildTools
       def shhh(*args)
         out = shhh?(*args)
         raise ShellError, out unless out.status.exitstatus.zero?
+
+        out
       end
 
       def shhh?(*args)
-        Spud::Shell.cmd(args.join(' '))
+        Spud::Shell.cmd(SpudBuild.join_args(*args))
       end
 
       def invoke(rule_name, *args, **kwargs)
         @spud.invoke_rule(rule_name.to_s, *args, **kwargs)
       end
-
-      def die(message = nil, code: 1)
-        puts message if message
-        raise Error, code
-      end
-
-      class ShOut < Struct.new(:status, :output); end
     end
   end
 end

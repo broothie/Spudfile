@@ -1,10 +1,9 @@
 module Spud
   class Shell < String
-    attr_reader :cmd
-    attr_reader :status
+    attr_accessor :status
 
     def self.cmd(cmd)
-      new( `#{cmd}`, $?)
+      new(`#{cmd}`, $?)
     end
 
     def initialize(output, status)

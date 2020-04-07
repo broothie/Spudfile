@@ -10,7 +10,8 @@ module Spud
       def default_options
         {
           debug: false,
-          list: false
+          list: false,
+          version: false
         }
       end
 
@@ -18,8 +19,9 @@ module Spud
         arg = args[index]
 
         case arg
-        when '--debug' then [options.merge(debug: true), index + 1]
+        when '-v', '--version' then [options.merge(version: true), index + 1]
         when '-l', '--list' then [options.merge(list: true), index + 1]
+        when '--debug' then [options.merge(debug: true), index + 1]
         else raise Error, "invalid option '#{arg}'"
         end
       end
@@ -28,7 +30,7 @@ module Spud
         options = default_options.dup
         rule_name = nil
         index = 0
-        loop do
+        while index < args.length
           arg = args[index]
 
           if arg[0] != '-'

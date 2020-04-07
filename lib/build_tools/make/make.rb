@@ -23,7 +23,7 @@ module Spud::BuildTools
     end
 
     def invoke(*args, **kwargs)
-      system('make', name, *args)
+      system('make', @name, *args)
     end
   end
 end

@@ -1,4 +1,5 @@
 require_relative 'args'
+require_relative 'version'
 require_relative 'build_tools/build_tools'
 require_relative 'build_tools/spud/shell_error'
 
@@ -9,6 +10,11 @@ module Spud
 
   class Spud
     def run!
+      if options[:version]
+        puts VERSION
+        return
+      end
+
       if !rule_name || options[:list]
         rules.keys.each(&method(:puts))
         return
@@ -19,6 +25,7 @@ module Spud
       raise e if options[:debug]
 
     rescue Error => e
+      raise e if options[:debug]
       puts e.message
       exit(1)
 
@@ -41,7 +48,10 @@ module Spud
     end
 
     def build_tools
-      @build_tools ||= BuildTools::BUILD_TOOLS.map { |tool| tool.new(self) }.each(&:mount!)
+      @build_tools ||= BuildTools::BUILD_TOOLS
+        .reverse
+        .map { |tool| tool.new(self) }
+        .each(&:mount!)
     end
 
     # Args
