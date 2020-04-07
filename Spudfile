@@ -1,0 +1,17 @@
+
+def wrap(s)
+  "(#{s})"
+end
+
+build do |key: 'value'|
+  puts wrap(key)
+end
+
+rule 'prefix.thing' do
+  puts 'thing with prefix'
+end
+
+test_shell do
+  shh 'echo |'
+  puts 'hi'
+end
