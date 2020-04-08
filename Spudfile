@@ -45,7 +45,7 @@ push do |version = get_version|
 end
 
 clean do
-  rm '-rf *.gem'
+  rm? '-rf *.gem'
 end
 
 # Version

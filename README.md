@@ -1,43 +1,110 @@
-# Spud
+# `spud`
 
-Welcome to your new gem! In this directory, you'll find the files you need to be able to package up your Ruby library into a gem. Put your Ruby code in the file `lib/spud`. To experiment with that code, run `bin/console` for an interactive prompt.
+Spud is a build tool, written as a [ruby](https://www.ruby-lang.org) [DSL](https://en.wikipedia.org/wiki/Domain-specific_language).
 
-TODO: Delete this and the text above, and describe your gem
+- [Installation](#installation)
+- [Description](#description)
+- [Planned Features](#planned-features)
+<!-- - [Spec](#Spec) -->
 
 ## Installation
 
-Add this line to your application's Gemfile:
+### Via RubyGems
 
-```ruby
-gem 'spud'
+```shell script
+$ gem install spud
 ```
 
-And then execute:
+## Description
 
-    $ bundle
+Rules are written in a `Spudfile`. A simple rule to build a Go program might look like this:
+```ruby
+# Build `api` if any Go files have changed
+build '**/*.go' => 'api' do
+  go 'generate ./...'
+  go 'build -o api cmd/api/main.go'
+end
+```
 
-Or install it yourself as:
+Then, to run this rule from your shell: 
+```shell script
+$ spud build
+````
 
-    $ gem install spud
+Here's a contrived example of more features:
+```ruby
+# Block params declared for a rule can be passed in from the command line
+publish ['**/*.rb', 'spud.gemspec'] => 'spud-*.gem' do |version, m: 'updates'|
+  # `invoke` can be used to invoke other rules
+  invoke :test
+  invoke :clean
+  
+  # Commands that collide with global methods can be issued by name
+  git 'add -A'
+  git 'commit -m', q(m)
+  git 'push'
 
-## Usage
+  # Command names that *do* collide can be issued with `sh`. There are 3 levels of noisiness:
+  sh 'gem build spud.gemspec'
+  shh "gem install spud-#{version}.gem"
+  shhh "gem push spud-#{version}.gem"
+end
 
-TODO: Write usage instructions here
+# `rule` can be used to declare a rule if the rule name is going to collide with a global method
+rule :test do |package = './...'|
+  go "test #{package} -coverprofile=.cov"
+end
 
-## Development
+clean do
+  # `sh?` is a version of `sh` that won't quit the rule on error. There's also the quieter `shh?` and `shhh?`
+  sh? 'rm -rf api .cov'
+end
+```
 
-After checking out the repo, run `bin/setup` to install dependencies. Then, run `rake spec` to run the tests. You can also run `bin/console` for an interactive prompt that will allow you to experiment.
+Another cool feature is that Spudfiles integrate with Makefiles. This way you can drop a Spudfile in next to a Makefile and
+use all of your existing make rules. For example:
+```makefile
+# Makefile
+clean:
+    rm -rf bin %.log
+```
 
-To install this gem onto your local machine, run `bundle exec rake install`. To release a new version, update the version number in `version.rb`, and then run `bundle exec rake release`, which will create a git tag for the version, push git commits and tags, and push the `.gem` file to [rubygems.org](https://rubygems.org).
+```ruby
+# Spudfile
+build do
+  invoke :clean # This will invoke rule `clean` from the Makefile
+  go 'build -o bin main.go'    
+end
+```
 
-## Contributing
+## Spec
 
-Bug reports and pull requests are welcome on GitHub at https://github.com/[USERNAME]/spud. This project is intended to be a safe, welcoming space for collaboration, and contributors are expected to adhere to the [Contributor Covenant](http://contributor-covenant.org) code of conduct.
+```ruby
+rule_name *files, ['dependencies'] => ['targets'] do |required, optional = 'default', keyword: 'default'|
+  command *strings  # Issues a shell command
 
-## License
+  sh *strings     # Issues a shell command
+  shh *strings    # Issues a shell command without echoing the command
+  shhh *strings   # Issues a silent command
+  
+  # The following do the same as above, but won't kill the rule if their command fails
+  sh? *strings
+  shh? *strings
+  shhh? *strings
+  
+  q(string)   #=> 'string' (wraps a string in single quotes - helpful when issuing commands)
+  qq(string)  #=> "string" (wraps a string in double quotes ...)
+  
+  invoke rule_name, *args   # Invokes another rule
+end
 
-The gem is available as open source under the terms of the [MIT License](https://opensource.org/licenses/MIT).
+```
 
-## Code of Conduct
+## Planned Features
 
-Everyone interacting in the Spud project’s codebases, issue trackers, chat rooms and mailing lists is expected to follow the [code of conduct](https://github.com/[USERNAME]/spud/blob/master/CODE_OF_CONDUCT.md).
+- [x] Command line options
+- [x] Named rule args
+- [ ] Rule watching
+- [ ] Rule dependency chaining (like Makefiles)
+- [ ] Deeper make integration
+- [ ] Split script into multiple files
