@@ -4,8 +4,8 @@ Spud is a build tool, written as a [ruby](https://www.ruby-lang.org) [DSL](https
 
 - [Installation](#installation)
 - [Description](#description)
+- [Spec](#Spec)
 - [Planned Features](#planned-features)
-<!-- - [Spec](#Spec) -->
 
 ## Installation
 
