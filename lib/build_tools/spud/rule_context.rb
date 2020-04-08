@@ -5,10 +5,7 @@ require_relative '../../error'
 module Spud::BuildTools
   module SpudBuild
     def self.join_args(*args)
-      args
-        .map
-        .with_index { |arg, i| !i.zero? && arg.is_a?(String) && arg.include?("\s") ? "'#{arg}'" : arg }
-        .join(' ')
+      args.join(' ')
     end
 
     class RuleContext
@@ -64,6 +61,24 @@ module Spud::BuildTools
 
       def invoke(rule_name, *args, **kwargs)
         @spud.invoke_rule(rule_name.to_s, *args, **kwargs)
+      end
+
+      def q(s)
+        %('#{s}')
+      end
+
+      def qq(s)
+        %("#{s}")
+      end
+
+      def method_missing(method_name, *args)
+        method_name = method_name.to_s
+
+        if method_name.end_with?('?')
+          sh?(method_name.chomp('?'), *args)
+        else
+          sh(method_name, *args)
+        end
       end
     end
   end

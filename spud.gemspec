@@ -17,6 +17,5 @@ Gem::Specification.new do |s|
   s.executables << 'spud'
 
   s.add_development_dependency 'bundler', '~> 1.17'
-  s.add_development_dependency 'rake', '~> 10.0'
   s.add_development_dependency 'rspec', '~> 3.0'
 end

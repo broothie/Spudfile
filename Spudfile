@@ -1,29 +1,33 @@
 
-def bump(version, segment = :patch)
+def vbump(version, segment = 'patch')
   major, minor, patch = version.split('.')
 
-  case segment.to_sym
-  when :major then [major.to_i + 1, minor, patch].join('.')
-  when :minor then [major, minor.to_i + 1, patch].join('.')
-  else             [major, minor, patch.to_i + 1].join('.')
+  case segment
+  when 'major' then [major.to_i + 1, minor, patch].join('.')
+  when 'minor' then [major, minor.to_i + 1, patch].join('.')
+  else              [major, minor, patch.to_i + 1].join('.')
   end
 end
 
-def gem(version)
+def dotgem(version)
   "spud-#{version}.gem"
+end
+
+def get_version
+  `spud -v`.chomp
 end
 
 rb = '**/*.rb'
 gemspec = 'spud.gemspec'
 
 # Build
-publish do |version|
+publish do |version = get_version|
   invoke :local, version
   invoke :push, version
   invoke :clean
 end
 
-local do |version|
+local do |version = get_version|
   invoke :build
   invoke :install, version
 end
@@ -33,45 +37,49 @@ build [rb, gemspec] => '*.gem' do
 end
 
 install [rb, gemspec] => `which spud` do |version|
-  sh 'gem install', gem(version)
+  sh 'gem install', dotgem(version)
 end
 
-push do |version|
-  sh 'gem push', gem(version)
+push do |version = get_version|
+  sh 'gem push', dotgem(version)
 end
 
 clean do
-  sh? 'rm -rf spud-*.gem'
+  rm '-rf filename'
 end
 
 # Version
 version do
-  shh "grep VERSION lib/version.rb | sed -e 's/[^0-9\.]//g'"
+  cat 'lib/version.rb'
 end
 
-bump_version do |seg = :patch|
-  version = shhh "grep VERSION lib/version.rb | sed -e 's/[^0-9\.]//g'"
+bump do |seg = 'patch'|
+  version = grep 'VERSION lib/version.rb | sed -e \'s/[^0-9.]//g\''
 
   File.write 'lib/version.rb', <<-ruby
-module Spud
-  VERSION = '#{bump(version, seg)}'
-end
-ruby
+    module Spud
+      VERSION = '#{vbump(version, seg)}'
+    end
+  ruby
 end
 
 # Git
 git do |message|
   invoke :clean
-  sh 'git add -A'
-  sh 'git commit -m', message
-  sh 'git push'
+  git 'add -A'
+  git 'commit -m', q(message)
+  git 'push'
 end
 
 # Sandbox
 bin do |*args|
-  sh 'ruby -I lib bin/spud', *args
+  ruby '-I lib bin/spud', *args
 end
 
 echo do |first, second = '2', third: '3'|
-  sh 'echo', first, second, third
+  echo first, second, third
+end
+
+gen do
+  touch 'filename'
 end

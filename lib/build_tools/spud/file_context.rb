@@ -10,12 +10,15 @@ module Spud::BuildTools
         @rules = {}
       end
 
-      def rule(name, deps = {}, &block)
+      def rule(name, *args, &block)
         name = name.to_s
-        @rules[name] = Rule.new(@spud, self, name, deps, &block)
+        files = args.select { |arg| arg.is_a?(String) }
+        deps = args.select { |arg| arg.is_a?(Hash) }.reduce({}) { |hash, dep| hash.merge(dep) }
+        @rules[name] = Rule.new(@spud, self, name, files, deps, block)
       end
 
       def method_missing(method_name, *args, &block)
+        method_name = method_name.to_s
         rule(method_name, *args, &block)
       end
     end
