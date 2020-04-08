@@ -33,13 +33,14 @@ $ spud build
 
 Here's a contrived example of more features:
 ```ruby
+# File dependencies are declared as sets of files which build other files
 # Block params declared for a rule can be passed in from the command line
 publish ['**/*.rb', 'spud.gemspec'] => 'spud-*.gem' do |version, m: 'updates'|
   # `invoke` can be used to invoke other rules
   invoke :test
   invoke :clean
   
-  # Commands that collide with global methods can be issued by name
+  # Commands that don't collide with global methods can be issued by name
   git 'add -A'
   git 'commit -m', q(m)
   git 'push'
