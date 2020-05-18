@@ -1,3 +1,3 @@
 
-clean:
-	echo cleaning
+make_rule:
+	echo from make

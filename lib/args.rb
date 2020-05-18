@@ -9,9 +9,10 @@ module Spud
 
       def default_options
         {
+          help: false,
+          version: false,
+          watches: [],
           debug: false,
-          list: false,
-          version: false
         }
       end
 
@@ -19,8 +20,9 @@ module Spud
         arg = args[index]
 
         case arg
+        when '-h', '--help' then [options.merge(help: true), index + 1]
         when '-v', '--version' then [options.merge(version: true), index + 1]
-        when '-l', '--list' then [options.merge(list: true), index + 1]
+        when '-w', '--watch' then [options.merge(watches: options[:watches] + [args[index + 1]]), index + 2]
         when '--debug' then [options.merge(debug: true), index + 1]
         else raise Error, "invalid option '#{arg}'"
         end

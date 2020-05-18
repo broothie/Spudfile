@@ -4,10 +4,6 @@ require_relative '../../error'
 
 module Spud::BuildTools
   module SpudBuild
-    def self.join_args(*args)
-      args.join(' ')
-    end
-
     class RuleContext
       def initialize(spud, file_context)
         @spud = spud
@@ -17,68 +13,49 @@ module Spud::BuildTools
         end
       end
 
-      def sh(*args)
-        out = sh?(*args)
+      def sh(cmd)
+        out = sh?(cmd)
         raise ShellError unless out.status.exitstatus.zero?
 
         out
       end
 
-      def sh?(*args)
-        cmd = SpudBuild.join_args(*args)
+      def sh?(cmd)
         puts cmd
 
         out = Spud::Shell.cmd(cmd)
-        puts out
+        puts out unless out.empty?
 
         out
       end
 
-      def shh(*args)
-        out = shh?(*args)
+      def shh(cmd)
+        out = shh?(cmd)
         raise ShellError unless out.status.exitstatus.zero?
 
         out
       end
 
-      def shh?(*args)
-        out = Spud::Shell.cmd(SpudBuild.join_args(*args))
-        puts out
+      def shh?(cmd)
+        out = Spud::Shell.cmd(cmd)
+        puts out unless out.empty?
 
         out
       end
 
-      def shhh(*args)
-        out = shhh?(*args)
+      def shhh(cmd)
+        out = shhh?(cmd)
         raise ShellError, out unless out.status.exitstatus.zero?
 
         out
       end
 
-      def shhh?(*args)
-        Spud::Shell.cmd(SpudBuild.join_args(*args))
+      def shhh?(cmd)
+        Spud::Shell.cmd(cmd)
       end
 
-      def invoke(rule_name, *args, **kwargs)
-        @spud.invoke_rule(rule_name.to_s, *args, **kwargs)
-      end
-
-      def q(s)
-        %('#{s}')
-      end
-
-      def qq(s)
-        %("#{s}")
-      end
-
-      def method_missing(method_name, *args)
-        method_name = method_name.to_s
-
-        if method_name.end_with?('?')
-          sh?(method_name.chomp('?'), *args)
-        else
-          sh(method_name, *args)
-        end
+      def invoke(name, *args, **kwargs)
+        @spud.invoke(name, *args, **kwargs)
       end
     end
   end

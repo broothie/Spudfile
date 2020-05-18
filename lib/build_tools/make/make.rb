@@ -25,5 +25,9 @@ module Spud::BuildTools
     def invoke(*args, **kwargs)
       system('make', @name, *args)
     end
+
+    def filename
+      'Makefile'
+    end
   end
 end

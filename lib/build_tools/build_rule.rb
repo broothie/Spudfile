@@ -4,6 +4,10 @@ module Spud
       def invoke(*args, **kwargs)
         raise NotImplementedError
       end
+
+      def filename
+        raise NotImplementedError
+      end
     end
   end
 end

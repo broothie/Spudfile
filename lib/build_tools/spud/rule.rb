@@ -6,9 +6,12 @@ require_relative '../../error'
 module Spud::BuildTools
   module SpudBuild
     class Rule < BuildRule
-      def initialize(spud, file_context, name, files, deps, block)
+      attr_reader :filename
+
+      def initialize(spud, file_context, filename, name, files, deps, block)
         @spud = spud
         @file_context = file_context
+        @filename = filename
         @name = name
         @files = files
         @deps = deps
@@ -43,7 +46,6 @@ module Spud::BuildTools
       def up_to_date?
         return files_up_to_date? unless files_up_to_date?.nil?
         deps_up_to_date?
-        #files_up_to_date? && deps_up_to_date?
       end
 
       def files_up_to_date?
@@ -107,10 +109,6 @@ module Spud::BuildTools
 
         param_source = match[:params]
         eval("-> (#{param_source}) {}")
-      end
-
-      def filename
-        'Spudfile'
       end
     end
   end
