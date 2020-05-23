@@ -18,7 +18,7 @@ module Spud
             output.puts line
           end
         rescue Interrupt
-          break
+          exit
         end
       end
 

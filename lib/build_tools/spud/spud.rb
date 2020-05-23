@@ -14,9 +14,12 @@ module Spud::BuildTools
         filenames.each do |filename|
           source = File.read(filename)
           @ctx = FileContext.new(@spud, filename)
-          @ctx.instance_eval(source)
 
-          @rules.merge!(@ctx.rules)
+          $LOAD_PATH << File.dirname(filename)
+          @ctx.instance_eval(source)
+          $LOAD_PATH.pop
+
+          @rules.merge!(@ctx.__rules)
         end
       end
     end

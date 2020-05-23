@@ -1,3 +1,4 @@
+require_relative './env'
 
 # Build
 local do |version = get_version|
@@ -51,7 +52,7 @@ end
 
 # Sandbox
 server do
-  sh 'fileserver'
+  puts Env::THINGS
 end
 
 # Helpers
