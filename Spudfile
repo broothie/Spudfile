@@ -13,14 +13,14 @@ install 'spud.gemspec' => `which spud` do |version|
   sh "gem install #{dotgem(version)}"
 end
 
-push do |version = get_version|
-  sh "gem push #{dotgem(version)}"
+push do |otp, version = get_version|
+  sh "gem push --otp #{otp} #{dotgem(version)}"
 end
 
 # Publish
-publish do |version = get_version|
+publish do |otp, version = get_version|
   invoke :local
-  invoke :push, version
+  invoke :push, otp, version
   invoke :clean
 end
 
@@ -42,11 +42,16 @@ bump do |seg = 'patch'|
 end
 
 # Git
-push do |message|
+git do |message|
   invoke :clean
   sh 'git add -A'
-  sh "git commit -m #{message}"
+  sh "git commit -m '#{message}'"
   sh 'git push'
+end
+
+# Sandbox
+server do
+  sh 'fileserver'
 end
 
 # Helpers
@@ -64,10 +69,11 @@ def dotgem(version)
   "spud-#{version}.gem"
 end
 
+VERSION_MATCHER = /\d+\.\d+\.\d+/
 def get_version
-  File.read('lib/version.rb').match(/\d+\.\d+\.\d+/).to_s
+  File.read('lib/version.rb').match(VERSION_MATCHER).to_s
 end
 
 def set_version(version)
-  File.write('lib/version.rb', "module Spud\n  VERSION = '#{version}'\nend")
+  File.write('lib/version.rb', File.read('lib/version.rb').gsub(VERSION_MATCHER, version))
 end

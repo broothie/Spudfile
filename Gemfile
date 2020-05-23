@@ -6,5 +6,6 @@ git_source(:github) {|repo_name| "https://github.com/#{repo_name}" }
 gemspec
 
 group :development do
-  gem 'byebug'
+  gem "pry", "~> 0.13.1"
+  gem "byebug", "~> 11.0"
 end

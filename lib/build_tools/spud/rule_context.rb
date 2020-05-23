@@ -22,11 +22,7 @@ module Spud::BuildTools
 
       def sh?(cmd)
         puts cmd
-
-        out = Spud::Shell.cmd(cmd)
-        puts out unless out.empty?
-
-        out
+        Spud::Shell.new(cmd)
       end
 
       def shh(cmd)
@@ -37,10 +33,7 @@ module Spud::BuildTools
       end
 
       def shh?(cmd)
-        out = Spud::Shell.cmd(cmd)
-        puts out unless out.empty?
-
-        out
+        Spud::Shell.new(cmd)
       end
 
       def shhh(cmd)
@@ -51,7 +44,7 @@ module Spud::BuildTools
       end
 
       def shhh?(cmd)
-        Spud::Shell.cmd(cmd)
+        Spud::Shell.new(cmd, silent: true)
       end
 
       def invoke(name, *args, **kwargs)

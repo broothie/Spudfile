@@ -1,5 +1,4 @@
 require 'stringio'
-
 require_relative 'args'
 require_relative 'version'
 require_relative 'build_tools/build_tools'
@@ -36,11 +35,6 @@ module Spud
     rescue BuildTools::SpudBuild::ShellError => e
       raise e if options[:debug]
 
-    rescue Error => e
-      raise e if options[:debug]
-      puts e.message
-      exit(1)
-
     rescue => e
       raise e if options[:debug]
       puts e.message
@@ -59,15 +53,12 @@ module Spud
       timestamps = {}
       loop do
         begin
-          Dir.glob(*globs).each do |filename|
+          filenames = Dir.glob(*globs)
+          filenames.each do |filename|
             new_timestamp = File.mtime(filename)
             old_timestamp = timestamps[filename]
-            unless old_timestamp
-              timestamps[filename] = new_timestamp
-              next
-            end
 
-            if new_timestamp > old_timestamp
+            if !old_timestamp || new_timestamp > old_timestamp
               timestamps[filename] = new_timestamp
               invoke(name, *args, **kwargs)
               break
@@ -97,10 +88,9 @@ module Spud
 
     def print_rules!
       table = rules.map { |name, rule| [name, rule.filename] }
-      table.unshift(%w[RULE FILENAME])
 
-      longest_rule = 'RULE'.length
-      longest_filename = 'FILENAME'.length
+      longest_rule = 0
+      longest_filename = 0
       table.each do |(rule, filename)|
         longest_rule = rule.length if rule.length > longest_rule
         longest_filename = filename.length if filename.length > longest_filename
@@ -121,9 +111,10 @@ module Spud
       help.puts '  spud [options] <rule> [args]'
       help.puts
       help.puts 'options:'
-      help.puts '  -h, --help     show this help dialog dialog'
-      help.puts '  -v, --version  show spud version'
-      help.puts '  --debug        run in debug mode'
+      help.puts '  -h, --help           show this help dialog dialog'
+      help.puts '  -v, --version        show spud version'
+      help.puts '  -w, --watch <files>  watch files for changes'
+      help.puts '  --debug              run in debug mode'
 
       puts help.string
     end

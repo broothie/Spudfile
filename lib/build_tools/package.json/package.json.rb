@@ -4,8 +4,6 @@ require_relative '../build_rule'
 
 module Spud::BuildTools
   class Node < BuildTool
-    NAME = 'node'
-
     attr_reader :rules
 
     def mount!
@@ -24,7 +22,11 @@ module Spud::BuildTools
       end
 
       def invoke(*args, **kwargs)
-        system(@source)
+        system(@source, out: STDOUT)
+      end
+
+      def filename
+        'package.json'
       end
     end
   end

@@ -1,6 +1,6 @@
 require_relative 'spud/spud'
 require_relative 'make/make'
-require_relative 'node/node'
+require_relative 'package.json/package.json'
 
 module Spud
   module BuildTools
