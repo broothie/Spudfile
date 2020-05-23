@@ -22,7 +22,7 @@ module Spud
         case arg
         when '-h', '--help' then [options.merge(help: true), index + 1]
         when '-v', '--version' then [options.merge(version: true), index + 1]
-        when '-w', '--watch' then [options.merge(watches: options[:watches] + [args[index + 1]]), index + 2]
+        #when '-w', '--watch' then [options.merge(watches: options[:watches] + [args[index + 1]]), index + 2]
         when '--debug' then [options.merge(debug: true), index + 1]
         else raise Error, "invalid option '#{arg}'"
         end

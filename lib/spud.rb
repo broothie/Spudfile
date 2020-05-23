@@ -50,6 +50,7 @@ module Spud
       rule = rules[name.to_s]
       raise Error, "no rule found for '#{name}'" unless rule
 
+      thread = nil
       timestamps = {}
       loop do
         begin
@@ -60,13 +61,16 @@ module Spud
 
             if !old_timestamp || new_timestamp > old_timestamp
               timestamps[filename] = new_timestamp
-              invoke(name, *args, **kwargs)
+
+              thread.kill if thread
+              thread = Thread.new { invoke(name, *args, **kwargs) }
               break
             end
           end
 
           sleep 0.1
         rescue Interrupt
+          thread.kill if thread
           break
         end
       end
@@ -87,18 +91,71 @@ module Spud
     end
 
     def print_rules!
-      table = rules.map { |name, rule| [name, rule.filename] }
+      #table = rules.map { |name, rule| { name: name, filename: rule.filename } }
+
+      longest_name = 0
+      longest_filename = 0
+      longest_positional = 0
+      longest_keyword = 0
+      table = []
+      rules.each do |name, rule|
+        longest_name = name.length if name.length > longest_name
+
+        positional = rule.positional_params.map(&method(:wrap_param)).join(' ')
+        longest_positional = positional.length if positional.length > longest_positional
+
+        keyword = rule.keyword_params.map(&method(:prefix_param)).join(' ')
+        longest_keyword = keyword.length if keyword.length > longest_keyword
+
+        longest_filename = rule.filename.length if rule.filename.length > longest_filename
+
+        table << [name, positional, keyword, rule.filename]
+      end
+
+      table.each do |(name, positional, keyword, filename)|
+        fields = [name.ljust(longest_name)]
+        fields << positional.ljust(longest_positional) unless longest_positional == 0
+        fields << keyword.ljust(longest_keyword) unless longest_keyword == 0
+        fields << filename.ljust(longest_filename)
+
+        puts fields.join('  ')
+      end
+
+      return
 
       longest_rule = 0
       longest_filename = 0
+      longest_positional = 0
+      longest_keyword = 0
       table.each do |(rule, filename)|
         longest_rule = rule.length if rule.length > longest_rule
         longest_filename = filename.length if filename.length > longest_filename
+
+        positional = rule.positional_params.map(&method(:wrap_param)).join(' ')
+        longest_positional = positional.length if positional.length > longest_positional
+
+        keyword = rule.keyword_params.map(&method(:prefix_param)).join(' ')
+        longest_keyword = keyword.length if keyword.length > longest_keyword
       end
 
       table.each do |(rule, filename)|
+        [
+          [rule, longest_rule],
+          [positional, longest_positional],
+          [filename, longest_filename],
+          [filename, longest_filename],
+        ]
+
         puts "#{rule.ljust(longest_rule)}  #{filename.ljust(longest_filename)}"
       end
+    end
+
+    def wrap_param(name)
+      "<#{name}>"
+    end
+
+    def prefix_param(name)
+      name.length == 1 ? "-#{name}" : "--#{name}"
     end
 
     # Help

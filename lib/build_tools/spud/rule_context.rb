@@ -5,8 +5,11 @@ require_relative '../../error'
 module Spud::BuildTools
   module SpudBuild
     class RuleContext
+      attr_reader :__process
+
       def initialize(spud, file_context)
-        @spud = spud
+        @__spud = spud
+        @__process = nil
 
         file_context.singleton_methods.each do |method_name|
           define_singleton_method(method_name, &file_context.method(method_name))
@@ -48,7 +51,7 @@ module Spud::BuildTools
       end
 
       def invoke(name, *args, **kwargs)
-        @spud.invoke(name, *args, **kwargs)
+        @__spud.invoke(name, *args, **kwargs)
       end
     end
   end

@@ -1,7 +1,7 @@
-require_relative './env'
+require_relative 'env'
 
 # Build
-local do |version = get_version|
+local do |version: get_version|
   invoke :build
   invoke :install, version
 end
@@ -14,12 +14,12 @@ install 'spud.gemspec' => `which spud` do |version|
   sh "gem install #{dotgem(version)}"
 end
 
-push do |otp, version = get_version|
+push do |otp, version: get_version|
   sh "gem push --otp #{otp} #{dotgem(version)}"
 end
 
 # Publish
-publish do |otp, version = get_version|
+publish do |otp, version: get_version|
   invoke :local
   invoke :push, otp, version
   invoke :clean
@@ -28,6 +28,7 @@ end
 clean do
   sh? 'rm -rf *.gem'
   sh? 'rm file'
+  sh? 'rm .byebug_history'
 end
 
 # Version
@@ -35,7 +36,7 @@ version do
   puts get_version
 end
 
-bump do |seg = 'patch'|
+bump do |seg: 'patch'|
   old = get_version
   new = vbump(old, seg)
   set_version(new)
@@ -52,7 +53,12 @@ end
 
 # Sandbox
 server do
-  puts Env::THINGS
+  sh 'parcel serve'
+end
+
+echo do |i: 'start'|
+  out = sh "echo #{i}; sleep 1; echo end"
+  puts out: out
 end
 
 # Helpers
@@ -70,11 +76,11 @@ def dotgem(version)
   "spud-#{version}.gem"
 end
 
-VERSION_MATCHER = /\d+\.\d+\.\d+/
+@version_matcher = /\d+\.\d+\.\d+/
 def get_version
-  File.read('lib/version.rb').match(VERSION_MATCHER).to_s
+  File.read('lib/version.rb').match(@version_matcher).to_s
 end
 
 def set_version(version)
-  File.write('lib/version.rb', File.read('lib/version.rb').gsub(VERSION_MATCHER, version))
+  File.write('lib/version.rb', File.read('lib/version.rb').gsub(@version_matcher, version))
 end

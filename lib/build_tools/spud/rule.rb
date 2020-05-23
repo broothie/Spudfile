@@ -21,23 +21,29 @@ module Spud::BuildTools
       def invoke(*args, **kwargs)
         raise Spud::Error, "'#{@name}' is up to date" if up_to_date?
 
-        missing = required_params.length - args.length
+        missing = positional_params.length - args.length
         if missing > 0
-          names = required_params.map { |name| "'#{name}'" }.join(', ')
+          names = positional_params.map { |name| "'#{name}'" }.join(', ')
           arguments = missing > 1 ? 'arguments' : 'argument'
           raise Spud::Error, "invocation of '#{@name}' missing required #{arguments} #{names}"
         end
 
-        unless key_params?
-          RuleContext.new(@spud, @file_context).instance_exec(*args, &@block)
-          return
-        end
+        return RuleContext.new(@spud, @file_context).instance_exec(*args, &@block) unless key_params?
 
         begin
           RuleContext.new(@spud, @file_context).instance_exec(*args, **kwargs, &@block)
         rescue ArgumentError => e
           raise Spud::Error, "invocation of '#{@name}' with #{e.message}"
         end
+      end
+
+      # Params
+      def positional_params
+        @positional_params ||= params.select { |p| p.first == :req }.map(&:last)
+      end
+
+      def keyword_params
+        @keyword_params ||= params.select { |p| p.first == :key }.map(&:last)
       end
 
       private
@@ -89,11 +95,11 @@ module Spud::BuildTools
 
       # Lambda
       def key_params?
-        lam.parameters.map(&:first).include?(:key)
+        @key_params ||= !keyword_params.empty?
       end
 
-      def required_params
-        lam.parameters.select { |p| p.first == :req }.map(&:last)
+      def params
+        @params ||= lam.parameters
       end
 
       def lam

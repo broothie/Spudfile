@@ -8,6 +8,14 @@ module Spud
       def filename
         raise NotImplementedError
       end
+
+      def positional_params
+        []
+      end
+
+      def keyword_params
+        []
+      end
     end
   end
 end

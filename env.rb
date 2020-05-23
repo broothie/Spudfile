@@ -1,3 +1,4 @@
-module Env
-  THINGS = 'omg'.freeze
-end
+
+Env = OpenStruct.new(
+  things: 'omg'
+)
