@@ -1,6 +1,7 @@
 require 'stringio'
 require_relative 'args'
 require_relative 'version'
+require_relative 'shell'
 require_relative 'build_tools/build_tools'
 require_relative 'build_tools/spud/shell_error'
 
@@ -10,33 +11,39 @@ module Spud
   end
 
   class Spud
+    attr_accessor :watch_process
+
     def run!
-      if options[:help]
+      puts options if debug?
+      puts watches_present: watches_present? if debug?
+      puts wait: wait? if debug?
+
+      if help?
         print_help!
         return
       end
 
-      if options[:version]
+      if version?
         puts VERSION
         return
       end
 
-      unless rule_name
+      unless rule_present?
         print_rules!
         return
       end
 
-      unless options[:watches].empty?
+      if watches_present?
         watch(options[:watches], rule_name, *args[:positional], **args[:keyword])
         return
       end
 
       invoke(rule_name, *args[:positional], **args[:keyword])
     rescue BuildTools::SpudBuild::ShellError => e
-      raise e if options[:debug]
+      raise e if debug?
 
     rescue => e
-      raise e if options[:debug]
+      raise e if debug?
       puts e.message
     end
 
@@ -62,7 +69,9 @@ module Spud
             if !old_timestamp || new_timestamp > old_timestamp
               timestamps[filename] = new_timestamp
 
+              watch_process.kill! if watch_process
               thread.kill if thread
+
               thread = Thread.new { invoke(name, *args, **kwargs) }
               break
             end
@@ -71,9 +80,14 @@ module Spud
           sleep 0.1
         rescue Interrupt
           thread.kill if thread
+          watch_process.kill! if watch_process
           break
         end
       end
+    end
+
+    def wait?
+      @wait ||= !watches_present?
     end
 
     private
@@ -91,8 +105,6 @@ module Spud
     end
 
     def print_rules!
-      #table = rules.map { |name, rule| { name: name, filename: rule.filename } }
-
       longest_name = 0
       longest_filename = 0
       longest_positional = 0
@@ -119,34 +131,6 @@ module Spud
         fields << filename.ljust(longest_filename)
 
         puts fields.join('  ')
-      end
-
-      return
-
-      longest_rule = 0
-      longest_filename = 0
-      longest_positional = 0
-      longest_keyword = 0
-      table.each do |(rule, filename)|
-        longest_rule = rule.length if rule.length > longest_rule
-        longest_filename = filename.length if filename.length > longest_filename
-
-        positional = rule.positional_params.map(&method(:wrap_param)).join(' ')
-        longest_positional = positional.length if positional.length > longest_positional
-
-        keyword = rule.keyword_params.map(&method(:prefix_param)).join(' ')
-        longest_keyword = keyword.length if keyword.length > longest_keyword
-      end
-
-      table.each do |(rule, filename)|
-        [
-          [rule, longest_rule],
-          [positional, longest_positional],
-          [filename, longest_filename],
-          [filename, longest_filename],
-        ]
-
-        puts "#{rule.ljust(longest_rule)}  #{filename.ljust(longest_filename)}"
       end
     end
 
@@ -176,7 +160,18 @@ module Spud
       puts help.string
     end
 
+    # Options
+    def watches_present?
+      @watches_present ||= !options[:watches].empty?
+    end
+
+    %i[help version debug].each { |option| define_method("#{option}?") { options[option] } }
+
     # Args
+    def rule_present?
+      rule_name
+    end
+
     def options
       @options ||= args[:options]
     end

@@ -52,8 +52,8 @@ git do |message|
 end
 
 # Sandbox
-server do
-  sh 'parcel serve'
+fileserver do
+  puts sh 'fileserver'
 end
 
 echo do |i: 'start'|

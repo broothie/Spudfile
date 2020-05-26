@@ -28,7 +28,10 @@ module Spud::BuildTools
           raise Spud::Error, "invocation of '#{@name}' missing required #{arguments} #{names}"
         end
 
-        return RuleContext.new(@spud, @file_context).instance_exec(*args, &@block) unless key_params?
+        unless key_params?
+          RuleContext.new(@spud, @file_context).instance_exec(*args, &@block)
+          return
+        end
 
         begin
           RuleContext.new(@spud, @file_context).instance_exec(*args, **kwargs, &@block)

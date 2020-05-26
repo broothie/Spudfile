@@ -1,25 +1,38 @@
+require 'stringio'
 require 'open3'
 
 module Spud
   class Shell < String
-    attr_accessor :status
+    def self.call(cmd, silent: false, wait: false)
+      new(cmd, silent, wait)
+    end
 
-    def initialize(cmd, silent: false)
+    def initialize(cmd, silent = false, wait = false)
       output = StringIO.new
 
-      _, out, @thread = Open3.popen2e(cmd)
-      @status = @thread.value
-      while line = out.gets
-        puts line
-        output.puts line
+      stdin, out, @status = Open3.popen2e(cmd)
+      @thread = Thread.new do
+        while line = out.gets
+          puts line unless silent
+          output.puts line
+          super(output.string)
+        end
+
+        out.close
+        stdin.close
       end
 
-      super(output.string)
+      @thread.join if wait
+    end
+
+    def status
+      @status.value
     end
 
     def kill!
-      thread.kill
-      thread.join
+      Process.kill('KILL', @status.pid)
+      @thread.kill
+      @thread.join
     end
   end
 end
