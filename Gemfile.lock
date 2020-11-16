@@ -1,7 +1,7 @@
 PATH
   remote: .
   specs:
-    spud (0.1.16)
+    spud (0.1.18)
 
 GEM
   remote: https://rubygems.org/

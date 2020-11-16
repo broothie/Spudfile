@@ -3,11 +3,19 @@ require 'open3'
 
 module Spud
   class Shell < String
-    def self.call(cmd, silent: false, wait: false)
-      new(cmd, silent, wait)
+    def self.async(cmd, silent: false)
+      call(cmd, silent: silent, wait: false)
     end
 
-    def initialize(cmd, silent = false, wait = false)
+    def self.sync(cmd, silent: false)
+      call(cmd, silent: silent)
+    end
+
+    def self.call(cmd, silent: false, wait: true)
+      new(cmd, silent: silent, wait: wait)
+    end
+
+    def initialize(cmd, silent: false, wait: true)
       output = StringIO.new
 
       stdin, out, @status = Open3.popen2e(cmd)
@@ -27,6 +35,10 @@ module Spud
 
     def status
       @status.value
+    end
+
+    def wait!
+      @thread.join
     end
 
     def kill!

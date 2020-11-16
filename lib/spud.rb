@@ -152,7 +152,7 @@ module Spud
       help.puts '  spud [options] <rule> [args]'
       help.puts
       help.puts 'options:'
-      help.puts '  -h, --help           show this help dialog dialog'
+      help.puts '  -h, --help           show this help dialog'
       help.puts '  -v, --version        show spud version'
       help.puts '  -w, --watch <files>  watch files for changes'
       help.puts '  --debug              run in debug mode'

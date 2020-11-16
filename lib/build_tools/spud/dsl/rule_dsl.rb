@@ -1,10 +1,33 @@
-require_relative 'shell_error'
-require_relative '../../shell'
-require_relative '../../error'
+require 'fileutils'
+require_relative '../shell_error'
+require_relative '../../../shell'
+require_relative '../../../error'
 
 module Spud::BuildTools
   module SpudBuild
-    class RuleContext
+    class RuleDsl
+      def self.evaluate(source)
+        dsl = Class.new(BasicObject) do
+          define_method(:invoke) do |rule_name|
+          end
+
+          (1..3).each do |h_count|
+            ['', '?'].each do |suffix|
+              define_method("s#{'h' * h_count}#{suffix}") do |command|
+                puts command if h_count == 1
+                out = Spud::Shell.(command)
+
+                raise "failed on sh '#{command}'" if suffix != '?' && !out.status.exitstatus.zero?
+
+                out
+              end
+            end
+          end
+        end
+
+        dsl.new.instance_eval(source)
+      end
+
       def initialize(spud, file_context)
         @__spud = spud
 

@@ -2,8 +2,8 @@ require_relative 'env'
 
 # Build
 local do |version: get_version|
-  invoke :build
-  invoke :install, version
+  invoke 'build'
+  invoke 'install', version
 end
 
 build '**/*.rb' => '*.gem' do
@@ -20,9 +20,9 @@ end
 
 # Publish
 publish do |otp, version: get_version|
-  invoke :local
-  invoke :push, otp, version
-  invoke :clean
+  invoke 'local'
+  invoke 'push', otp, version
+  invoke 'clean'
 end
 
 clean do
@@ -45,15 +45,20 @@ end
 
 # Git
 git do |message|
-  invoke :clean
+  invoke 'clean'
   sh 'git add -A'
   sh "git commit -m '#{message}'"
   sh 'git push'
 end
 
+# Specs
+test do
+  sh 'bundle exec rspec'
+end
+
 # Sandbox
-fileserver do
-  puts sh 'fileserver'
+long_running do
+  sh 'fileserver'
 end
 
 echo do |i: 'start'|

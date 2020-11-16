@@ -1,5 +1,5 @@
-require_relative 'file_context'
-require_relative 'rule_context'
+require_relative 'dsl/file_dsl'
+require_relative 'dsl/rule_dsl'
 require_relative '../build_rule'
 require_relative '../../error'
 
@@ -29,12 +29,12 @@ module Spud::BuildTools
         end
 
         unless key_params?
-          RuleContext.new(@spud, @file_context).instance_exec(*args, &@block)
+          RuleDsl.new(@spud, @file_context).instance_exec(*args, &@block)
           return
         end
 
         begin
-          RuleContext.new(@spud, @file_context).instance_exec(*args, **kwargs, &@block)
+          RuleDsl.new(@spud, @file_context).instance_exec(*args, **kwargs, &@block)
         rescue ArgumentError => e
           raise Spud::Error, "invocation of '#{@name}' with #{e.message}"
         end

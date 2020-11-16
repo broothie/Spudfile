@@ -29,7 +29,7 @@ module Spud
       end
 
       def parse_args(args)
-        options = default_options.dup
+        options = default_options
         rule_name = nil
         index = 0
         while index < args.length

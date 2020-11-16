@@ -1,10 +1,12 @@
 module Spud
   module BuildTools
     class BuildTool
-      NAME = nil
-
       def initialize(spud)
         @spud = spud
+      end
+
+      def name
+        raise NotImplementedError
       end
 
       def mount!
