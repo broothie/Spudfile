@@ -5,8 +5,6 @@ module Spud
       attr_reader :name
       # @return [String]
       attr_reader :filename
-      # @return [Spud::TaskArgs]
-      attr_reader :args
 
       # @return [void]
       def self.mount!
@@ -27,6 +25,11 @@ module Spud
       # @return [Object]
       def invoke(positional = [], named = {})
         raise NotImplementedError
+      end
+
+      # @return [Spud::TaskArgs]
+      def args
+        @args ||= TaskArgs.new([])
       end
     end
   end
