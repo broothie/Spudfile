@@ -52,24 +52,28 @@ Hello Alice
 
 ## Spec by Example
 
+A task with 4 arguments:
+- a: required positional
+- b: optional positional
+- c: required named
+- d: optional named
 ```ruby
-# A task with 4 arguments:
-# - 1 required positional
-# - 1 optional positional
-# - 1 required named
-# - 1 optional named
-# and invoked with: 
-# $ spud fancy --d four -c three one 
-#=> ["one", "2", "three", "four"]
 fancy do |a, b = '2', c:, d: '4'|
   p [a, b, c, d]
 end
+```
 
-# A task issuing some shell commands
+```shell script
+$ spud fancy --d four -c three one 
+["one", "2", "three", "four"]
+```
+
+A task issuing some shell commands:
+```ruby
 shelly do
-  sh 'echo hello'    # Prints the output of 'echo hello', prints 'echo hello' first (like in Make)
-  shh 'echo hello'   # Prints the output of 'echo hello', doesn't print 'echo hello' first
-  shhh 'echo hello'  # No output is printed at all
+  sh 'echo hello'    # Prints 'echo hello', then prints the output of `$ echo hello` (like in Make)
+  shh 'echo hello'   # Prints the output of `$ echo hello`
+  shhh 'echo hello'  # Prints nothing
 
   sh! 'exit 1'  # Runs the shell command, and raises an error if it fails. Equivalents are available for shh! and shhh!
 
@@ -78,8 +82,10 @@ shelly do
   puts result.success?        #=> true
   puts result.exitstatus      #=> 0
 end
+```
 
-# An unconventionally named task invoking other tasks
+An unconventionally named task invoking other tasks:
+```ruby
 task 'call-others' do
   # All of the following invoke the task `shelly`
   shelly            # Straight up
@@ -138,7 +144,7 @@ bundle  package.json
 all     Makefile
 ```
 
-But you can issue them with `spud` as well. 
+but you can issue them with `spud` as well:
 
 ```shell script
 $ spud all
