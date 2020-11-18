@@ -9,8 +9,8 @@ module Spud
             require("./#{name}")
           end
 
-          def task(name, *, &block)
-            BuildTools::Spud::Task.add_task(name, &block)
+          def task(name, dependencies = {}, &block)
+            BuildTools::Spud::Task.add_task(name, dependencies, &block)
           end
 
           def method_missing(name, *args, &block)

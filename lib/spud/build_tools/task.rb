@@ -31,6 +31,11 @@ module Spud
       def args
         @args ||= TaskArgs.new([])
       end
+
+      # @return [String]
+      def details
+        name
+      end
     end
   end
 end

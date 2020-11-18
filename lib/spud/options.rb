@@ -1,6 +1,6 @@
 module Spud
   class Options
-    BOOLEANS = %i[help files debug]
+    BOOLEANS = %i[help files inspect debug]
 
     BOOLEANS.each do |name|
       attr_accessor name

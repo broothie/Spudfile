@@ -1,6 +1,8 @@
+require 'stringio'
 require 'spud/error'
 require 'spud/task_args'
 require 'spud/build_tools/task'
+require 'spud/build_tools/spud/dependency'
 require 'spud/build_tools/spud/task'
 require 'spud/build_tools/spud/dsl/file'
 require 'spud/build_tools/spud/dsl/task'
@@ -27,10 +29,13 @@ module Spud
         # @param task [String]
         # @param block [Proc]
         # @return [void]
-        def self.add_task(task, &block)
-          raise "task '#{task}' somehow created without filename" unless @filename
-
-          new(name: qualified_name(@filename, task.to_s), filename: @filename, &block)
+        def self.add_task(task, dependencies, &block)
+          new(
+            name: qualified_name(@filename, task.to_s),
+            filename: @filename,
+            dependencies: dependencies,
+            &block
+          )
         end
 
         # @param filename [String]
@@ -49,10 +54,14 @@ module Spud
 
         # @param filename [String]
         # @param task [String]
+        # @return [BuildTools::Spud::Task]
         def self.task_for(filename, task)
           Runtime.tasks[qualified_name(filename, task.to_s)]
         end
 
+        # @param filename [String]
+        # @param task [String]
+        # @return [String]
         def self.qualified_name(filename, task)
           raise "task '#{task}' somehow created without filename" unless filename
 
@@ -71,8 +80,13 @@ module Spud
           (dirname.split('/') + basename_array).join('.')
         end
 
-        def initialize(name:, filename:, &block)
-          super
+        # @param name [String]
+        # @param filename [String]
+        # @param dependencies [Hash]
+        # @param block [Proc]
+        def initialize(name:, filename:, dependencies:, &block)
+          super(name: name, filename: filename)
+          @dependencies = dependencies.map { |to, from| Dependency.new(to, from) }
           @block = block
         end
 
@@ -80,7 +94,12 @@ module Spud
         # @param named [Hash]
         # @return [Object]
         def invoke(positional, named)
-          check_required!(positional)
+          if up_to_date?
+            puts "'#{name}' up to date"
+            return
+          end
+
+          check_required_args!(positional)
 
           return task_dsl.instance_exec(*positional, &@block) unless args.any_named?
 
@@ -94,17 +113,50 @@ module Spud
           @args ||= ::Spud::TaskArgs.from_block(filename, &@block)
         end
 
+        # @return [String]
+        def details
+          filename, line_cursor = @block.source_location
+          line_cursor -= 1
+
+          lines = File.read(filename).split("\n")
+          builder = StringIO.new
+
+          while lines[line_cursor - 1] && lines[line_cursor - 1].start_with?('#')
+            line_cursor -= 1
+          end
+
+          while lines[line_cursor].start_with?('#')
+            builder.puts lines[line_cursor]
+            line_cursor += 1
+          end
+
+          until lines[line_cursor].start_with?('end')
+            builder.puts lines[line_cursor]
+            line_cursor += 1
+          end
+
+          builder.puts lines[line_cursor]
+          builder.string
+        end
+
         private
 
         # @param positional [Array<String>]
         # @return [void]
-        def check_required!(positional)
+        def check_required_args!(positional)
           required_positional = args.required_positional
           missing_positional = required_positional.length - positional.length
           if missing_positional > 0
             arguments = required_positional.length - missing_positional > 1 ? 'arguments' : 'argument'
             raise Error, "invocation of '#{name}' missing required #{arguments} #{required_positional.join(', ')}"
           end
+        end
+
+        # @return [Boolean]
+        def up_to_date?
+          return false if @dependencies.empty?
+
+          @dependencies.all?(&:up_to_date?)
         end
 
         # @return [Spud::DSL::Task]

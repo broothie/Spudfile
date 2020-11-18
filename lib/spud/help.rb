@@ -13,9 +13,10 @@ module Spud
       help.puts '  spud [options] <task> [args]'
       help.puts
       help.puts 'options:'
-      help.puts '  -h, --help   show this help dialog'
-      help.puts '  -f, --files  list parsed files'
-      help.puts '  --debug      run in debug mode'
+      help.puts '  -h, --help     show this help dialog'
+      help.puts '  -f, --files    list parsed files'
+      help.puts '  -i, --inspect  show details about a task'
+      help.puts '  --debug        run in debug mode'
 
       puts help.string
     end

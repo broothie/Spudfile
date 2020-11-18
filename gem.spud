@@ -1,10 +1,13 @@
+require 'net/http'
+require 'json'
 
+# Build and install local version of gem
 local do
   build
   install
 end
 
-build do
+build ['**/*.rb', '*.gemspec'] => '*.gem' do
   sh 'gem build'
 end
 
@@ -12,14 +15,27 @@ install do
   sh 'gem install *.gem'
 end
 
-publish do |otp|
-  clean
-  build
+push do |otp|
   sh "gem push --otp #{otp} *.gem"
 end
 
+publish do |otp|
+  clean
+  build
+  push otp
+end
+
+# Prints current local version
 version do
   puts File.read('lib/spud/version.rb').match(/\d+\.\d+\.\d+/)
+end
+
+# Prints currently pushed gem version
+pushed do
+  res = Net::HTTP.get(URI('https://rubygems.org/api/v1/gems/spud.json'))
+  json = JSON.parse(res)
+
+  puts json['version']
 end
 
 clean do

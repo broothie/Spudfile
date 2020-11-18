@@ -84,6 +84,15 @@ shelly do
 end
 ```
 
+A task building css files with sass. Like with `make`, this rule will only run if all files in `src/scss/*.scss` are
+newer than `dist/css/*.css`. Multiple dependency sets can be defined, and arrays can be used on either side of the `=>`
+to associate multiple globs. 
+```ruby
+styles 'src/scss/*.scss' => 'dist/css/*.css' do
+  sh 'sass src/scss:dist/css'  
+end
+```
+
 An unconventionally named task invoking other tasks:
 ```ruby
 task 'call-others' do
@@ -105,25 +114,21 @@ end
 We already have Rake right? I love Rake - it's powerful and reliable. My main issue with Rake is the argument syntax.
 
 To me,
-
 ```ruby
 greet do |name = 'Alice'|
   puts "Hello #{name}"
 end
 ```
-
 ```shell script
 $ spud greet Bob
 ```
 
 looks better than
-
 ```ruby
 task :greet, [:name] do |t, args|
   puts "Hello #{args.fetch(:name, 'Alice')}"
 end
 ```
-
 ```shell script
 $ rake greet\[Bob\]
 # or
@@ -135,7 +140,6 @@ $ rake 'greet[Bob]'
 Make is great too. That's why `spud` is integrated with make, as well as some other task-like tools. 
 
 I like this mainly because then you can list make rules:
-
 ```shell script
 $ ls
 Makefile package.json
@@ -145,7 +149,6 @@ all     Makefile
 ```
 
 but you can issue them with `spud` as well:
-
 ```shell script
 $ spud all
 echo building stuff...
@@ -159,7 +162,8 @@ webpack index.js
 ## TODO
 
 - [ ] Better spec coverage
-- [ ] File dependencies
+- [x] File dependencies
+- [x] Task inspection
 - [ ] Task watching
 - [ ] Rake integration
 - [ ] docker-compose integration

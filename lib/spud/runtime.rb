@@ -32,6 +32,11 @@ module Spud
           return
         end
 
+        if options.inspect?
+          puts get_task(args.task).details
+          return
+        end
+
         invoke(args.task, args.positional, args.named)
       rescue Error => error
         puts error.message
@@ -45,9 +50,14 @@ module Spud
       # @param positional [Array]
       # @param named [Hash]
       def invoke(task_name, positional = [], named = {})
+        get_task(task_name).invoke(positional, named)
+      end
+
+      def get_task(task_name)
         task = tasks[task_name.to_s]
         raise Error, "no task found for '#{task_name}'" unless task
-        task.invoke(positional, named)
+
+        task
       end
 
       # @return [Hash{String->Spud::Task}]
