@@ -1,86 +1,21 @@
-require_relative 'env'
 
-# Build
-local do |version: get_version|
-  invoke :build
-  invoke :install, version
+spec do |path = 'spec/lib/spud'|
+  sh "bundle exec rspec #{path}"
 end
 
-build '**/*.rb' => '*.gem' do
-  sh 'gem build spud.gemspec'
-end
-
-install 'spud.gemspec' => `which spud` do |version|
-  sh "gem install #{dotgem(version)}"
-end
-
-push do |otp, version: get_version|
-  sh "gem push --otp #{otp} #{dotgem(version)}"
-end
-
-# Publish
-publish do |otp, version: get_version|
-  invoke :local
-  invoke :push, otp, version
-  invoke :clean
+create do
+  invoke 'sandbox.yarn.create'
+  invoke 'sandbox.make.create'
 end
 
 clean do
-  sh? 'rm -rf *.gem'
-  sh? 'rm file'
-  sh? 'rm .byebug_history'
+  sh 'rm -rf .byebug_history .rspec_status'
+  invoke 'gem.clean'
+  invoke 'sandbox.yarn.clean'
+  invoke 'sandbox.make.clean'
 end
 
-# Version
-version do
-  puts get_version
-end
-
-bump do |seg: 'patch'|
-  old = get_version
-  new = vbump(old, seg)
-  set_version(new)
-  puts "bumped from #{old} to #{new}"
-end
-
-# Git
-git do |message|
-  invoke :clean
-  sh 'git add -A'
-  sh "git commit -m '#{message}'"
-  sh 'git push'
-end
-
-# Sandbox
-fileserver do
-  puts sh 'fileserver'
-end
-
-echo do |i: 'start'|
-  out = sh "echo #{i}; sleep 1; echo end"
-  puts out: out
-end
-
-# Helpers
-def vbump(version, segment = 'patch')
-  major, minor, patch = version.split('.')
-
-  case segment
-  when 'major' then [major.to_i + 1, minor, patch].join('.')
-  when 'minor' then [major, minor.to_i + 1, patch].join('.')
-  else              [major, minor, patch.to_i + 1].join('.')
-  end
-end
-
-def dotgem(version)
-  "spud-#{version}.gem"
-end
-
-@version_matcher = /\d+\.\d+\.\d+/
-def get_version
-  File.read('lib/version.rb').match(@version_matcher).to_s
-end
-
-def set_version(version)
-  File.write('lib/version.rb', File.read('lib/version.rb').gsub(@version_matcher, version))
+greet do |name, greeting = 'Hello', comma: 'yes'|
+  comma = comma == 'yes' ? ',' : ''
+  puts "#{greeting}#{comma} #{name}"
 end

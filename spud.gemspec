@@ -1,21 +1,19 @@
+require_relative 'lib/spud/version'
 
-lib = File.expand_path('../lib', __FILE__)
-$LOAD_PATH.unshift(lib) unless $LOAD_PATH.include?(lib)
-require 'spud'
+Gem::Specification.new do |gem|
+  gem.name        = 'spud'
+  gem.version     = Spud::VERSION
+  gem.summary     = 'Spud is a task runner, in the form of a ruby DSL.'
+  gem.homepage    = 'https://github.com/broothie/spud#readme'
+  gem.license     = 'MIT'
 
-Gem::Specification.new do |s|
-  s.name        = 'spud'
-  s.version     = Spud::VERSION
-  s.date        = '2010-04-05'
-  s.summary     = 'A build tool'
-  s.description = 'Spud is a build tool, written as a ruby DSL'
-  s.authors     = ['Andrew Booth']
-  s.email       = 'adbooth8@gmail.com'
-  s.files       = Dir.glob('lib/**/*.rb')
-  s.homepage    = 'https://github.com/broothie/spud#readme'
-  s.license     = 'MIT'
-  s.executables << 'spud'
+  gem.authors     = ['Andrew Booth']
+  gem.email       = 'andrew@andrewbooth.xyz'
 
-  s.add_development_dependency 'bundler', '~> 1.17'
-  s.add_development_dependency 'rspec', '~> 3.0'
+  gem.files       = Dir['lib/**/*.rb']
+  gem.executables << 'spud'
+
+  gem.add_development_dependency 'rspec', '~> 3.0'
+  gem.add_development_dependency 'pry', '~> 0.13.1'
+  gem.add_development_dependency 'byebug', '~> 11.0'
 end
