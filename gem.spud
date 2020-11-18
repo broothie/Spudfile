@@ -1,0 +1,31 @@
+
+local do
+  build
+  install
+end
+
+build do
+  sh 'gem build'
+end
+
+install do
+  sh 'gem install *.gem'
+end
+
+publish do |otp|
+  clean
+  build
+  sh "gem push --otp #{otp} *.gem"
+end
+
+version do
+  puts File.read('lib/spud/version.rb').match(/\d+\.\d+\.\d+/)
+end
+
+clean do
+  sh 'rm -rf *.gem'
+end
+
+bump do
+  sh 'bump lib/spud/version.rb'
+end

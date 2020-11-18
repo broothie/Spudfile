@@ -1,111 +1,98 @@
 # `spud`
 
-Spud is a build tool, written as a [ruby](https://www.ruby-lang.org) [DSL](https://en.wikipedia.org/wiki/Domain-specific_language).
+Spud is a task runner, in the form of a [ruby](https://www.ruby-lang.org) [DSL](https://en.wikipedia.org/wiki/Domain-specific_language).
 
 - [Installation](#installation)
-- [Description](#description)
-- [Spec](#Spec)
-- [Planned Features](#planned-features)
+- [Description](#usage)
+- [Spec](#spec)
+- [Planned Features](#todo)
 
 ## Installation
-
-### Via RubyGems
 
 ```shell script
 $ gem install spud
 ```
 
-## Description
+## Usage
 
-Rules are written in a `Spudfile`. A simple rule to build a Go program might look like this:
+Rules are written in a `Spudfile`. A simple `Spudfile` might look like this:
 ```ruby
-# Build `api` if any Go files have changed
-build '**/*.go' => 'api' do
-  go 'generate ./...'
-  go 'build -o api cmd/api/main.go'
-end
-```
-
-Then, to run this rule from your shell: 
-```shell script
-$ spud build
-````
-
-Here's a contrived example of more features:
-```ruby
-# File dependencies are declared as sets of files which build other files
-# Block params declared for a rule can be passed in from the command line
-publish ['**/*.rb', 'spud.gemspec'] => 'spud-*.gem' do |version, m: 'updates'|
-  # `invoke` can be used to invoke other rules
-  invoke :test
-  invoke :clean
-  
-  # Commands that don't collide with global methods can be issued by name
-  git 'add -A'
-  git 'commit -m', q(m)
-  git 'push'
-
-  # Command names that *do* collide can be issued with `sh`. There are 3 levels of noisiness:
-  sh 'gem build spud.gemspec'
-  shh "gem install spud-#{version}.gem"
-  shhh "gem push spud-#{version}.gem"
-end
-
-# `rule` can be used to declare a rule if the rule name is going to collide with a global method
-rule :test do |package = './...'|
-  go "test #{package} -coverprofile=.cov"
-end
-
+# A task called `clean`
 clean do
-  # `sh?` is a version of `sh` that won't quit the rule on error. There's also the quieter `shh?` and `shhh?`
-  sh? 'rm -rf api .cov'
+  # A shortcut for shelling out
+  sh 'rm -rf .byebug_history .spec_status'
+end
+
+# Adding args to the block adds args to the task
+spec do |path = 'spec/lib/spud'|
+  sh "bundle exec rspec #{path}"
+end
+
+# You can ask for positional, optional, and named args
+greet do |name, greeting = 'Hello', comma: 'yes'|
+  comma = comma == 'yes' ? ',' : ''
+  puts "#{greeting}#{comma} #{name}"
 end
 ```
 
-Another cool feature is that Spudfiles integrate with Makefiles. This way you can drop a Spudfile in next to a Makefile and
-use all of your existing make rules. For example:
-```makefile
-# Makefile
-clean:
-    rm -rf bin %.log
+To list all tasks and their args, run spud without any arguments:
+```shell script
+$ spud
+spec                 <path=spec/lib/spud>
+create
+clean
+greet                <name> <greeting=Hello>  --comma=yes
 ```
 
-```ruby
-# Spudfile
-build do
-  invoke :clean # This will invoke rule `clean` from the Makefile
-  go 'build -o bin main.go'    
-end
-```
+Then, to run the `greet` rule from your shell: 
+```shell script
+$ spud greet Andrew --comma no
+Hello Andrew
+````
 
 ## Spec
 
 ```ruby
-rule_name *files, ['dependencies'] => ['targets'] do |required, optional = 'default', keyword: 'default'|
-  command *strings  # Issues a shell command
-
-  sh *strings     # Issues a shell command
-  shh *strings    # Issues a shell command without echoing the command
-  shhh *strings   # Issues a silent command
-  
-  # The following do the same as above, but won't kill the rule if their command fails
-  sh? *strings
-  shh? *strings
-  shhh? *strings
-  
-  q(string)   #=> 'string' (wraps a string in single quotes - helpful when issuing commands)
-  qq(string)  #=> "string" (wraps a string in double quotes ...)
-  
-  invoke rule_name, *args   # Invokes another rule
+# A task with 4 arguments:
+# - 1 required positional
+# - 1 optional positional
+# - 1 required named
+# - 1 optional named
+# and called with: 
+# $ spud fancy --d four -c three one 
+#=> ["one", "2", "three", "four"]
+fancy do |a, b = '2', c:, d: '4'|
+  p [a, b, c, d]
 end
 
+# A task issuing some shell commands
+shelly do
+  sh 'echo hello'    # Prints the output of 'echo hello', prints 'echo hello' first (like in Make)
+  shh 'echo hello'   # Prints the output of 'echo hello', doesn't print 'echo hello first
+  shhh 'echo hello'  # Prints the output of 'echo hello', no output is printed at all
+
+  sh! 'exit 1'  # Runs the shell command, and raises an error if it fails. Equivalents are available for shh! and shhh!
+
+  result = shhh 'which spud'  # Returns a String like object that also acts like a Process::Status
+  puts result                 #=> '/Users/you/.rbenv/shims/spud'
+  puts result.success?        #=> true
+  puts result.exitstatus      #=> 0
+end
+
+# An explicitly defined task invoking other tasks
+task 'call-others' do
+  # All of the following invoke the task `shelly`
+  shelly
+  invoke :shelly
+  invoke 'shelly'
+  invoke! 'shelly'
+
+  # Calling tasks with arguments
+  fancy 'one', c: 'three'
+end
 ```
 
-## Planned Features
+## TODO
 
-- [x] Command line options
-- [x] Named rule args
+- [ ] Fuller spec coverage
 - [ ] Rule watching
-- [ ] Rule dependency chaining (like Makefiles)
-- [ ] Deeper make integration
-- [ ] Split script into multiple files
