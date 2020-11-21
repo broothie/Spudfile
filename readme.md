@@ -19,9 +19,10 @@ $ gem install spud
 Tasks are defined in a `Spudfile`:
 ```ruby
 # Spudfile
+
+# The classic 'clean' rule
 clean do
-  # Issue a shell command
-  sh 'rm -rf .byebug_history .spec_status'
+  sh 'rm -rf .byebug_history .spec_status' # `sh` issues shell commands
 end
 
 # Block args == command line args:

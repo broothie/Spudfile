@@ -8,7 +8,7 @@ module Spud
       module DSL
         class Task
           def initialize(filename)
-            @filename = filename
+            @__filename = filename
           end
 
           def sh(command)
@@ -44,17 +44,23 @@ module Spud
           end
 
           def invoke(task, *positional, **named)
-            Spud::Task.invoke(@filename, task, positional, named)
+            invoke!(task, *positional, **named)
           rescue Error => error
-            puts "invoke failed for '#{task}': #{error}"
+            puts error.message
+            raise error if Runtime.debug?
           end
 
           def invoke!(task, *positional, **named)
-            Spud::Task.invoke(@filename, task, positional, named)
+            Spud::Task.invoke(
+              filename: @__filename,
+              task: task.to_s,
+              positional: positional,
+              named: named,
+            )
           end
 
           def method_missing(symbol, *positional, **named)
-            Spud::Task.task_for(@filename, symbol) ? Spud::Task.invoke(@filename, symbol, positional, named) : super
+            invoke(@__filename, symbol, *positional, **named)
           end
         end
       end

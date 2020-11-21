@@ -9,3 +9,8 @@
 
 # rspec failure tracking
 .rspec_status
+.byebug_history
+node_modules
+package.json
+yarn.lock
+index.js

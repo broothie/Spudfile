@@ -19,3 +19,7 @@ greet do |name, greeting = 'Hello', comma: 'yes'|
   comma = comma == 'yes' ? ',' : ''
   puts "#{greeting}#{comma} #{name}"
 end
+
+fileserver do
+  sh 'fileserver'
+end

@@ -22,7 +22,7 @@ module Spud
 
       # @param positional [Array]
       # @param named [Hash]
-      # @return [Object]
+      # @return [Process::Status]
       def invoke(positional = [], named = {})
         raise NotImplementedError
       end

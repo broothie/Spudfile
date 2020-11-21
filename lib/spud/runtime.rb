@@ -1,6 +1,7 @@
 require 'spud/error'
 require 'spud/help'
 require 'spud/lister'
+require 'spud/watch'
 require 'spud/cli/parser'
 require 'spud/build_tools/task'
 require 'spud/build_tools/build_tools'
@@ -8,8 +9,9 @@ require 'spud/build_tools/build_tools'
 module Spud
   module Runtime
     class << self
+      # @return [void]
       def run!
-        if options.debug?
+        if debug?
           puts "options: #{options.inspect}"
           puts "task: #{args.task}"
           puts "positional: #{args.positional}"
@@ -27,23 +29,28 @@ module Spud
           return
         end
 
-        unless args.task
-          print_tasks!
-          return
-        end
-
         if options.inspect?
           puts get_task(args.task).details
           return
         end
 
-        invoke(args.task, args.positional, args.named)
+        unless args.task
+          lister.list!
+          return
+        end
+
+        unless options.watches.empty?
+          watch!
+          return
+        end
+
+        invoke!
       rescue Error => error
         puts error.message
-        raise error if options.debug?
+        raise error if debug?
       rescue => error
         puts "fatal: #{error.message}"
-        raise error if options.debug?
+        raise error if debug?
       end
 
       # @param task_name [String]
@@ -53,19 +60,41 @@ module Spud
         get_task(task_name).invoke(positional, named)
       end
 
+      # @return [Hash{String->Spud::Task}]
+      def tasks
+        @tasks ||= {}
+      end
+
+      # @return [Boolean]
+      def debug?
+        @debug ||= ENV['SPUD_DEBUG']
+      end
+
+      private
+
+      # @return [void]
+      def invoke!
+        invoke(args.task, args.positional, args.named)
+      end
+
+      # @return [void]
+      def watch!
+        Watch.run!(
+          task: args.task,
+          positional: args.positional,
+          named: args.named,
+          watches: options.watches,
+        )
+      end
+
+      # @param task_name [String]
+      # @return [Spud::Task]
       def get_task(task_name)
         task = tasks[task_name.to_s]
         raise Error, "no task found for '#{task_name}'" unless task
 
         task
       end
-
-      # @return [Hash{String->Spud::Task}]
-      def tasks
-        @tasks ||= {}
-      end
-
-      private
 
       # @return [Array<String>]
       def filenames
@@ -101,11 +130,7 @@ module Spud
         @args ||= Spud::CLI::Parser.parse!
       end
 
-      # @return [void]
-      def print_tasks!
-        lister.list!
-      end
-
+      # @return [Spud::Lister]
       def lister
         @lister ||= Lister.new(tasks.values)
       end

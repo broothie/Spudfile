@@ -38,8 +38,10 @@ module Spud
           @opening_commands = opening_commands
         end
 
+        # @return [Process::Status]
         def invoke(*)
           system(*(@opening_commands + [name]))
+          $?
         end
       end
     end

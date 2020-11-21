@@ -8,11 +8,10 @@ describe Spud::CLI::Parser do
 
   describe 'options' do
     context 'when valid args' do
-      let(:args) { %w[-w server.rb -w index.html --debug] }
+      let(:args) { %w[-w server.rb -w index.html] }
 
       it 'parses options correctly' do
         expect(options.help?).to be false
-        expect(options.debug?).to be true
         expect(options.watches).to include 'server.rb', 'index.html'
       end
     end

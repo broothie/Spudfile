@@ -14,41 +14,19 @@ module Spud
         # @return [void]
         def self.mount!
           Dir['**/Spudfile', '**/*.spud'].each do |filename|
-            @filename = filename
-            file_dsl.instance_eval(File.read(filename), filename)
+            DSL::File.new(filename).instance_eval(File.read(filename), filename)
           end
-
-          @filename = nil
-        end
-
-        # @return [Spud::DSL::File]
-        def self.file_dsl
-          @file_dsl ||= DSL::File.new
-        end
-
-        # @param task [String]
-        # @param block [Proc]
-        # @return [void]
-        def self.add_task(task, dependencies, &block)
-          new(
-            name: qualified_name(@filename, task.to_s),
-            filename: @filename,
-            dependencies: dependencies,
-            &block
-          )
         end
 
         # @param filename [String]
         # @param task [String]
         # @param positional [Array]
         # @param named [Hash]
-        def self.invoke(filename, task, positional, named)
-          task = task.to_s
-          task_obj = task_for(filename, task)
-          if task_obj
-            Runtime.invoke(task_obj.name, positional, named)
-          else
+        def self.invoke(filename:, task:, positional:, named:)
+          if task.include?('.')
             Runtime.invoke(task, positional, named)
+          else
+            Runtime.invoke(qualified_name(filename, task), positional, named)
           end
         end
 
@@ -56,16 +34,14 @@ module Spud
         # @param task [String]
         # @return [BuildTools::Spud::Task]
         def self.task_for(filename, task)
-          Runtime.tasks[qualified_name(filename, task.to_s)]
+          Runtime.tasks[qualified_name(filename, task)]
         end
 
         # @param filename [String]
         # @param task [String]
         # @return [String]
         def self.qualified_name(filename, task)
-          raise "task '#{task}' somehow created without filename" unless filename
-
-          [qualified_prefix(filename), task.to_s].join('.').gsub(/^\./, '')
+          [qualified_prefix(filename), task].join('.').gsub(/^\./, '')
         end
 
         # @param filename [String]

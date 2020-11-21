@@ -18,8 +18,10 @@ module Spud
           end
         end
 
+        # @return [Process::Status]
         def invoke(*)
           system('make', name)
+          $?
         end
       end
     end
