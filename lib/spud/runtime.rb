@@ -14,7 +14,7 @@ module Spud
         if debug?
           puts "options: #{options.inspect}"
           puts "task: #{args.task}"
-          puts "positional: #{args.positional}"
+          puts "ordered: #{args.ordered}"
           puts "named: #{args.named}"
         end
 
@@ -54,10 +54,10 @@ module Spud
       end
 
       # @param task_name [String]
-      # @param positional [Array]
+      # @param ordered [Array]
       # @param named [Hash]
-      def invoke(task_name, positional = [], named = {})
-        get_task(task_name).invoke(positional, named)
+      def invoke(task_name, ordered = [], named = {})
+        get_task(task_name).invoke(ordered, named)
       end
 
       # @return [Hash{String->Spud::Task}]
@@ -74,14 +74,14 @@ module Spud
 
       # @return [void]
       def invoke!
-        invoke(args.task, args.positional, args.named)
+        invoke(args.task, args.ordered, args.named)
       end
 
       # @return [void]
       def watch!
         Watch.run!(
           task: args.task,
-          positional: args.positional,
+          ordered: args.ordered,
           named: args.named,
           watches: options.watches,
         )

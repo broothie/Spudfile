@@ -16,9 +16,9 @@ module Spud
           parameters.map do |type, name|
             case type
             when :req
-              TaskArg.new(name, 'positional')
+              TaskArg.new(name, 'ordered')
             when :opt
-              TaskArg.new(name, 'positional', default: arg_values[name])
+              TaskArg.new(name, 'ordered', default: arg_values[name])
             when :keyreq
               TaskArg.new(name, 'named')
             when :key
@@ -29,11 +29,11 @@ module Spud
 
         # @return [Array]
         def dummy_args
-          [dummy_positional_args, dummy_named_args]
+          [dummy_ordered_args, dummy_named_args]
         end
 
         # @return [Array<NilClass>]
-        def dummy_positional_args
+        def dummy_ordered_args
           Array.new(parameters.count { |p| p.first == :req })
         end
 
@@ -50,8 +50,8 @@ module Spud
         # @return [Hash]
         def arg_values
           @arg_values ||= begin
-            positional, named = dummy_args
-            lambda(arg_hash_string).call(*positional, **named)
+            ordered, named = dummy_args
+            lambda(arg_hash_string).call(*ordered, **named)
           end
         end
 

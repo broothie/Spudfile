@@ -43,24 +43,24 @@ module Spud
             result
           end
 
-          def invoke(task, *positional, **named)
-            invoke!(task, *positional, **named)
+          def invoke(task, *ordered, **named)
+            invoke!(task, *ordered, **named)
           rescue Error => error
             puts error.message
             raise error if Runtime.debug?
           end
 
-          def invoke!(task, *positional, **named)
+          def invoke!(task, *ordered, **named)
             Spud::Task.invoke(
               filename: @__filename,
               task: task.to_s,
-              positional: positional,
+              ordered: ordered,
               named: named,
             )
           end
 
-          def method_missing(symbol, *positional, **named)
-            invoke(@__filename, symbol, *positional, **named)
+          def method_missing(symbol, *ordered, **named)
+            invoke(@__filename, symbol, *ordered, **named)
           end
         end
       end

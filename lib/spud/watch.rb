@@ -1,12 +1,12 @@
 module Spud
   class Watch
-    def self.run!(task:, positional:, named:, watches:)
-      new(task: task, positional: positional, named: named, watches: watches).run!
+    def self.run!(task:, ordered:, named:, watches:)
+      new(task: task, ordered: ordered, named: named, watches: watches).run!
     end
 
-    def initialize(task:, positional:, named:, watches:)
+    def initialize(task:, ordered:, named:, watches:)
       @task = task
-      @positional = positional
+      @ordered = ordered
       @named = named
       @watches = watches
 
@@ -22,7 +22,7 @@ module Spud
           puts status: thread&.status
 
           @last_changed = latest_watch_change
-          thread = Thread.new { Runtime.invoke(@task, @positional, @named) }
+          thread = Thread.new { Runtime.invoke(@task, @ordered, @named) }
         end
 
         sleep(0.1)

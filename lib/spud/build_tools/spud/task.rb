@@ -20,13 +20,13 @@ module Spud
 
         # @param filename [String]
         # @param task [String]
-        # @param positional [Array]
+        # @param ordered [Array]
         # @param named [Hash]
-        def self.invoke(filename:, task:, positional:, named:)
+        def self.invoke(filename:, task:, ordered:, named:)
           if task.include?('.')
-            Runtime.invoke(task, positional, named)
+            Runtime.invoke(task, ordered, named)
           else
-            Runtime.invoke(qualified_name(filename, task), positional, named)
+            Runtime.invoke(qualified_name(filename, task), ordered, named)
           end
         end
 
@@ -66,20 +66,20 @@ module Spud
           @block = block
         end
 
-        # @param positional [Array]
+        # @param ordered [Array]
         # @param named [Hash]
         # @return [Object]
-        def invoke(positional, named)
+        def invoke(ordered, named)
           if up_to_date?
             puts "'#{name}' up to date"
             return
           end
 
-          check_required_args!(positional)
+          check_required_args!(ordered)
 
-          return task_dsl.instance_exec(*positional, &@block) unless args.any_named?
+          return task_dsl.instance_exec(*ordered, &@block) unless args.any_named?
 
-          task_dsl.instance_exec(*positional, **symbolize_keys(named), &@block)
+          task_dsl.instance_exec(*ordered, **symbolize_keys(named), &@block)
         rescue ArgumentError => error
           raise Error, "invocation of '#{name}' with #{error.message}"
         end
@@ -117,14 +117,14 @@ module Spud
 
         private
 
-        # @param positional [Array<String>]
+        # @param ordered [Array<String>]
         # @return [void]
-        def check_required_args!(positional)
-          required_positional = args.required_positional
-          missing_positional = required_positional.length - positional.length
-          if missing_positional > 0
-            arguments = required_positional.length - missing_positional > 1 ? 'arguments' : 'argument'
-            raise Error, "invocation of '#{name}' missing required #{arguments} #{required_positional.join(', ')}"
+        def check_required_args!(ordered)
+          required_ordered = args.required_ordered
+          missing_ordered = required_ordered.length - ordered.length
+          if missing_ordered > 0
+            arguments = required_ordered.length - missing_ordered > 1 ? 'arguments' : 'argument'
+            raise Error, "invocation of '#{name}' missing required #{arguments} #{required_ordered.join(', ')}"
           end
         end
 

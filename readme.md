@@ -30,7 +30,7 @@ spec do |path = 'spec/lib/spud'|
   sh "bundle exec rspec #{path}"
 end
 
-# You can ask for positional, optional, and named args:
+# You can ask for ordered, optional, and named args:
 greet do |name, greeting = 'Hello', comma: 'yes'|
   comma = comma == 'yes' ? ',' : ''
   puts "#{greeting}#{comma} #{name}"
@@ -54,8 +54,8 @@ Hello Alice
 ## Spec by Example
 
 A task with 4 arguments:
-- a: required positional
-- b: optional positional
+- a: required ordered
+- b: optional ordered
 - c: required named
 - d: optional named
 ```ruby

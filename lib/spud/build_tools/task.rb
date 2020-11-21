@@ -20,10 +20,10 @@ module Spud
         Runtime.tasks[name.to_s] = self
       end
 
-      # @param positional [Array]
+      # @param ordered [Array]
       # @param named [Hash]
       # @return [Process::Status]
-      def invoke(positional = [], named = {})
+      def invoke(ordered = [], named = {})
         raise NotImplementedError
       end
 

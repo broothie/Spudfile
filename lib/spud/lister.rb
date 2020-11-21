@@ -14,9 +14,9 @@ module Spud
       @tasks.each do |task|
         builder.write task.name.ljust(max_task_length)
 
-        if show_positional_args?
+        if show_ordered_args?
           builder.write '  '
-          builder.write task.args.positional.join(' ').ljust(max_positional_string_length)
+          builder.write task.args.ordered.join(' ').ljust(max_ordered_string_length)
         end
 
         if show_named_args?
@@ -48,16 +48,16 @@ module Spud
     end
 
     # @return [Integer]
-    def max_positional_string_length
-      @max_positional_string_length ||= @tasks
-        .map { |task| task.args.positional.join(' ') }
+    def max_ordered_string_length
+      @max_ordered_string_length ||= @tasks
+        .map { |task| task.args.ordered.join(' ') }
         .map(&:length)
         .max
     end
 
     # @return [Boolean]
-    def show_positional_args?
-      @show_positional_args ||= @tasks.any? { |task| task.args.any_positional? }
+    def show_ordered_args?
+      @show_ordered_args ||= @tasks.any? { |task| task.args.any_ordered? }
     end
 
     # @return [Integer]

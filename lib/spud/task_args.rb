@@ -17,18 +17,18 @@ module Spud
     end
 
     # @return [Array<Spud::TaskArg>]
-    def positional
-      @positional ||= select(&:positional?)
+    def ordered
+      @ordered ||= select(&:ordered?)
     end
 
     # @return [Array<Spud::TaskArg>]
-    def required_positional
-      @required_positional ||= positional.select(&:required?)
+    def required_ordered
+      @required_ordered ||= ordered.select(&:required?)
     end
 
     # @return [Boolean]
-    def any_positional?
-      !positional.empty?
+    def any_ordered?
+      !ordered.empty?
     end
 
     # @return [Array<Spud::TaskArg>]

@@ -4,7 +4,7 @@ module Spud
     # @param type [String]
     # @param default [String]
     def initialize(name, type, default: nil)
-      raise 'must be of type "positional" or "named"' unless %w[positional named].include?(type)
+      raise 'must be of type "ordered" or "named"' unless %w[ordered named].include?(type)
 
       @name = name
       @type = type
@@ -22,8 +22,8 @@ module Spud
     end
 
     # @return [Boolean]
-    def positional?
-      @type == 'positional'
+    def ordered?
+      @type == 'ordered'
     end
 
     # @return [Boolean]
@@ -33,7 +33,7 @@ module Spud
 
     # @return [String]
     def to_s
-      if positional?
+      if ordered?
         if has_default?
           "<#{@name}=#{@default}>"
         else

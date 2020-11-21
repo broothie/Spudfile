@@ -12,8 +12,8 @@ module Spud
       end
 
       # @return [Array<String>]
-      def positional
-        @positional ||= []
+      def ordered
+        @ordered ||= []
       end
 
       # @return [Hash{String->String}]

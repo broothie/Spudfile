@@ -49,7 +49,7 @@ describe Spud::CLI::Parser do
       it 'gets everything' do
         expect(options.watches).to include 'server.rb'
         expect(task).to eq 'run'
-        expect(results.positional).to include 'dev', 'no-db'
+        expect(results.ordered).to include 'dev', 'no-db'
         expect(results.named).to include 'code' => '555'
       end
     end

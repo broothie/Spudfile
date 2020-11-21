@@ -39,7 +39,7 @@ module Spud
           if flag?
             results.named[lstrip_hyphens(take!)] = take!
           else
-            results.positional << take!
+            results.ordered << take!
           end
         end
       end
