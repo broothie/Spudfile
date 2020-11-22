@@ -4,22 +4,11 @@ spec do |path = 'spec/lib/spud'|
 end
 
 create do
-  invoke 'sandbox.yarn.create'
-  invoke 'sandbox.make.create'
+  invoke 'sandbox.create'
 end
 
 clean do
   sh 'rm -rf .byebug_history .rspec_status'
   invoke 'gem.clean'
-  invoke 'sandbox.yarn.clean'
-  invoke 'sandbox.make.clean'
-end
-
-greet do |name, greeting = 'Hello', comma: 'yes'|
-  comma = comma == 'yes' ? ',' : ''
-  puts "#{greeting}#{comma} #{name}"
-end
-
-fileserver do
-  sh 'fileserver'
+  invoke 'sandbox.clean'
 end

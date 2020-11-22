@@ -19,6 +19,7 @@ push do |otp|
   sh "gem push --otp #{otp} *.gem"
 end
 
+# Builds and pushes new gem
 publish do |otp|
   clean
   build

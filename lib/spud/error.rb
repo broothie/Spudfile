@@ -1,3 +1,4 @@
+# typed: true
 module Spud
   class Error < StandardError
     # @return [String]

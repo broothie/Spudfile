@@ -1,14 +1,19 @@
+# typed: true
+require 'sorbet-runtime'
 require 'stringio'
+require 'spud/task_runners/task'
 
 module Spud
   class Lister
-    # @param tasks [Array<BuildTools::Task>]
+    extend T::Sig
+
+    sig {params(tasks: T::Array[TaskRunners::Task]).void}
     def initialize(tasks)
       @tasks = tasks
     end
 
-    # @return [void]
-    def list!
+    sig {void}
+    def list_tasks!
       builder = StringIO.new
 
       @tasks.each do |task|
@@ -35,19 +40,24 @@ module Spud
       puts builder.string
     end
 
-    # @return [void]
+    sig {void}
     def list_filenames!
       puts filenames.join("\n")
     end
 
+    sig {returns(T::Array[String])}
+    def filenames
+      @filenames ||= @tasks.map(&:filename).uniq
+    end
+
     private
 
-    # @return [Integer]
+    sig {returns(Integer)}
     def max_task_length
       @max_task_length ||= @tasks.map { |task| task.name.length }.max
     end
 
-    # @return [Integer]
+    sig {returns(Integer)}
     def max_ordered_string_length
       @max_ordered_string_length ||= @tasks
         .map { |task| task.args.ordered.join(' ') }
@@ -55,12 +65,12 @@ module Spud
         .max
     end
 
-    # @return [Boolean]
+    sig {returns(T::Boolean)}
     def show_ordered_args?
       @show_ordered_args ||= @tasks.any? { |task| task.args.any_ordered? }
     end
 
-    # @return [Integer]
+    sig {returns(Integer)}
     def max_named_string_length
       @max_named_string_length ||= @tasks
         .map { |task| task.args.named.join(' ') }
@@ -68,17 +78,12 @@ module Spud
         .max
     end
 
-    # @return [Boolean]
+    sig {returns(T::Boolean)}
     def show_named_args?
       @show_named_args ||= @tasks.any? { |task| task.args.any_named? }
     end
 
-    # @return [Array<String>]
-    def filenames
-      @filenames ||= @tasks.map(&:filename).uniq
-    end
-
-    # @return [Boolean]
+    sig {returns(T::Boolean)}
     def show_filenames?
       filenames.length > 1
     end

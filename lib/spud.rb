@@ -1,7 +1,8 @@
-require_relative 'spud/runtime'
+# typed: true
+require_relative 'spud/driver'
 
 module Spud
   def self.run!
-    Runtime.run!
+    Driver.new.run!
   end
 end

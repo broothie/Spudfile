@@ -1,47 +1,49 @@
+# typed: true
+require 'sorbet-runtime'
 require 'spud/task_arg'
-require 'spud/build_tools/spud/block_param_info'
+require 'spud/block_param_info'
 
 module Spud
   class TaskArgs < Array
-    # @param filename [String]
-    # @param block [Proc]
-    # @return [Spud::TaskArgs]
+    extend T::Sig
+
+    sig {params(filename: String, block: Proc).returns(T.attached_class)}
     def self.from_block(filename, &block)
-      info = BuildTools::Spud::BlockParamInfo.new(filename, &block)
+      info = BlockParamInfo.new(filename, &block)
       new(info.task_args)
     end
 
-    # @param task_args [Array<Spud::TaskArg>]
+    sig {params(task_args: T::Array[TaskArg]).void}
     def initialize(task_args)
       super(task_args)
     end
 
-    # @return [Array<Spud::TaskArg>]
+    sig {returns(T::Array[TaskArg])}
     def ordered
       @ordered ||= select(&:ordered?)
     end
 
-    # @return [Array<Spud::TaskArg>]
+    sig {returns(T::Array[TaskArg])}
     def required_ordered
       @required_ordered ||= ordered.select(&:required?)
     end
 
-    # @return [Boolean]
+    sig {returns(T::Boolean)}
     def any_ordered?
       !ordered.empty?
     end
 
-    # @return [Array<Spud::TaskArg>]
+    sig {returns(T::Array[TaskArg])}
     def named
       @named ||= select(&:named?)
     end
 
-    # @return [Array<Spud::TaskArg>]
+    sig {returns(T::Array[TaskArg])}
     def required_named
       @required_named ||= named.select(&:required?)
     end
 
-    # @return [Boolean]
+    sig {returns(T::Boolean)}
     def any_named?
       !named.empty?
     end

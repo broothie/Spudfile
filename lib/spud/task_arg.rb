@@ -1,8 +1,11 @@
+# typed: strict
+require 'sorbet-runtime'
+
 module Spud
   class TaskArg
-    # @param name [String]
-    # @param type [String]
-    # @param default [String]
+    extend T::Sig
+
+    sig {params(name: String, type: String, default: T.nilable(String)).void}
     def initialize(name, type, default: nil)
       raise 'must be of type "ordered" or "named"' unless %w[ordered named].include?(type)
 
@@ -11,27 +14,27 @@ module Spud
       @default = default
     end
 
-    # @return [Boolean]
+    sig {returns(T::Boolean)}
     def required?
       !has_default?
     end
 
-    # @return [Boolean]
+    sig {returns(T::Boolean)}
     def has_default?
       !!@default
     end
 
-    # @return [Boolean]
+    sig {returns(T::Boolean)}
     def ordered?
       @type == 'ordered'
     end
 
-    # @return [Boolean]
+    sig {returns(T::Boolean)}
     def named?
       @type == 'named'
     end
 
-    # @return [String]
+    sig {returns(String)}
     def to_s
       if ordered?
         if has_default?

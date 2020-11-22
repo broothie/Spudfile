@@ -1,10 +1,35 @@
+# typed: true
+require 'sorbet-runtime'
+require 'spud/driver'
+
 module Spud
   class Watch
-    def self.run!(task:, ordered:, named:, watches:)
-      new(task: task, ordered: ordered, named: named, watches: watches).run!
+    extend T::Sig
+
+    sig do
+      params(
+        driver: Driver,
+        task: String,
+        ordered: T::Array[String],
+        named: T::Hash[String, String],
+        watches: T::Array[String],
+      ).void
+    end
+    def self.run!(driver:, task:, ordered:, named:, watches:)
+      new(driver: driver, task: task, ordered: ordered, named: named, watches: watches).run!
     end
 
-    def initialize(task:, ordered:, named:, watches:)
+    sig do
+      params(
+        driver: Driver,
+        task: String,
+        ordered: T::Array[String],
+        named: T::Hash[String, String],
+        watches: T::Array[String],
+      ).void
+    end
+    def initialize(driver:, task:, ordered:, named:, watches:)
+      @driver = driver
       @task = task
       @ordered = ordered
       @named = named
@@ -13,30 +38,33 @@ module Spud
       @last_changed = Time.at(0)
     end
 
+    sig {void}
     def run!
-      thread = nil
+      thread = T.let(nil, T.nilable(Thread))
 
       loop do
         if watches_changed?
           thread&.kill
-          puts status: thread&.status
+          Process.kill('SIGKILL', T.must(@driver.subprocess_pid)) if @driver.subprocess_pid
 
           @last_changed = latest_watch_change
-          thread = Thread.new { Runtime.invoke(@task, @ordered, @named) }
+          thread = Thread.new { @driver.invoke(@task, @ordered, @named) }
         end
 
         sleep(0.1)
       end
     rescue SystemExit, Interrupt => error
-      puts "handled #{error}" if Runtime.debug?
+      puts "handled interrupt #{error}" if @driver.debug?
     end
 
+    sig {returns(T::Boolean)}
     def watches_changed?
       @last_changed < latest_watch_change
     end
 
+    sig {returns(Time)}
     def latest_watch_change
-      Dir[*@watches]
+      T.unsafe(Dir)[*@watches]
         .map(&File.method(:stat))
         .map(&:mtime)
         .max
