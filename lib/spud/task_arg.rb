@@ -5,6 +5,15 @@ module Spud
   class TaskArg
     extend T::Sig
 
+    sig {returns(String)}
+    attr_reader :name
+
+    sig {returns(String)}
+    attr_reader :type
+
+    sig {returns(T.nilable(String))}
+    attr_reader :default
+
     sig {params(name: String, type: String, default: T.nilable(String)).void}
     def initialize(name, type, default: nil)
       raise 'must be of type "ordered" or "named"' unless %w[ordered named].include?(type)

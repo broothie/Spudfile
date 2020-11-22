@@ -1,5 +1,4 @@
 # typed: false
-require 'spud/cli/parser'
 
 describe Spud::CLI::Parser do
   subject(:parser) { Spud::CLI::Parser.new(args) }

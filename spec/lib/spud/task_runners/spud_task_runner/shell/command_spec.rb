@@ -1,8 +1,6 @@
 # typed: false
 require 'sorbet-runtime'
 require 'stringio'
-require 'spud/driver'
-require 'spud/task_runners/spud_task_runner/shell/command'
 
 describe Spud::TaskRunners::SpudTaskRunner::Shell::Command do
   let(:handle) { StringIO.new }

@@ -1,5 +1,4 @@
 # typed: false
-require 'spud/task_runners/spud_task_runner/task'
 
 describe Spud::TaskRunners::SpudTaskRunner::Task do
   let(:name) { 'task_name' }

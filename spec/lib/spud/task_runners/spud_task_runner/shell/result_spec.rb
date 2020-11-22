@@ -1,8 +1,5 @@
 # typed: false
 require 'stringio'
-require 'spud/driver'
-require 'spud/task_runners/spud_task_runner/shell/command'
-require 'spud/task_runners/spud_task_runner/shell/result'
 
 describe Spud::TaskRunners::SpudTaskRunner::Shell::Result do
   let(:driver) { Spud::Driver.new }

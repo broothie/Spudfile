@@ -1,6 +1,7 @@
 
-spec do |path = 'spec/lib/spud'|
-  sh "bundle exec rspec #{path}"
+spec do |matcher = '*'|
+  paths = Dir.glob("spec/**/*#{matcher}*.rb")
+  sh "bundle exec rspec #{paths.join(' ')}"
 end
 
 create do

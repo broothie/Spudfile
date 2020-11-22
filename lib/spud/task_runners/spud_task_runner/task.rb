@@ -22,6 +22,9 @@ module Spud
         sig {override.returns(String)}
         attr_reader :name
 
+        sig {returns(T::Array[Dependency])}
+        attr_reader :dependencies
+
         sig {override.params(driver: Driver).returns(T::Array[TaskRunners::Task])}
         def self.tasks(driver)
           Dir['**/Spudfile', '**/*.spud'].flat_map { |filename| FileDSL.run(driver, filename) }

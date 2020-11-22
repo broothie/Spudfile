@@ -1,7 +1,6 @@
 # typed: false
 require 'tempfile'
 require 'securerandom'
-require 'spud/task_runners/spud_task_runner/dependency'
 
 describe Spud::TaskRunners::SpudTaskRunner::Dependency do
   def close_all(*files)

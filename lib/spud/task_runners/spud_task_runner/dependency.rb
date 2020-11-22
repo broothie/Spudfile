@@ -1,19 +1,29 @@
 # typed: true
+
 module Spud
   module TaskRunners
     module SpudTaskRunner
       class Dependency
+        extend T::Sig
+
+        sig {returns(T::Array[String])}
+        attr_reader :sources
+
+        sig {returns(T::Array[String])}
+        attr_reader :targets
+
+        sig {params(source: T.any(String, T::Array[String]), target: T.any(String, T::Array[String])).void}
         def initialize(source, target)
           @sources = [source].flatten
           @targets = [target].flatten
         end
 
-        # @return [Boolean]
+        sig {returns(T::Boolean)}
         def need_to_update?
           !up_to_date?
         end
 
-        # @return [Boolean]
+        sig {returns(T::Boolean)}
         def up_to_date?
           source_filenames = Dir[*@sources]
           return true if source_filenames.empty?
