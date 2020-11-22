@@ -1,4 +1,4 @@
-# typed: false
+# typed: true
 require 'sorbet-runtime'
 require 'spud/error'
 require 'spud/driver'

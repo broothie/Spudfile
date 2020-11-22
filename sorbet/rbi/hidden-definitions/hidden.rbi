@@ -5818,6 +5818,11 @@ class Spud::TaskArgs
   extend ::T::Private::Methods::SingletonMethodHooks
 end
 
+class Spud::TaskRunners::SpudTaskRunner::Dependency
+  extend ::T::Private::Methods::MethodHooks
+  extend ::T::Private::Methods::SingletonMethodHooks
+end
+
 class Spud::TaskRunners::SpudTaskRunner::FileDSL
   extend ::T::Private::Methods::MethodHooks
   extend ::T::Private::Methods::SingletonMethodHooks
@@ -5826,6 +5831,28 @@ end
 class Spud::TaskRunners::SpudTaskRunner::Shell::Command
   extend ::T::Private::Methods::MethodHooks
   extend ::T::Private::Methods::SingletonMethodHooks
+end
+
+class Spud::TaskRunners::SpudTaskRunner::Shell::Result
+  def coredump?(*args, &block); end
+
+  def exited?(*args, &block); end
+
+  def exitstatus(*args, &block); end
+
+  def pid(*args, &block); end
+
+  def signaled?(*args, &block); end
+
+  def stopped?(*args, &block); end
+
+  def stopsig(*args, &block); end
+
+  def success?(*args, &block); end
+
+  def termsig?(*args, &block); end
+
+  def to_i(*args, &block); end
 end
 
 class Spud::TaskRunners::SpudTaskRunner::Shell::Result
