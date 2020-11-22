@@ -163,8 +163,10 @@ webpack index.js
 ## TODO
 
 - [ ] Better spec coverage
+- [ ] Return result of invoke
+- [ ] Allow helper methods
 - [x] File dependencies
 - [x] Task inspection
-- [ ] Task watching
+- [x] Task watching
 - [ ] Rake integration
 - [ ] docker-compose integration
