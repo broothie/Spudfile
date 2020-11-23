@@ -14,15 +14,22 @@ module Spud
 
           attr_reader :result
 
-          sig {params(driver: Driver, command: String, silent: T::Boolean, handle: T.any(IO, StringIO)).returns(Result)}
-          def self.call(driver, command, silent: false, handle: STDOUT)
-            cmd = new(driver, command, silent: silent, handle: handle)
+          Handle = T.type_alias {T.any(IO, StringIO)}
+
+          sig {params(command: String, driver: T.nilable(Driver), silent: T::Boolean, handle: Handle).returns(Result)}
+          def self.call(command, driver: nil, silent: false, handle: STDOUT)
+            cmd = new(command, driver: driver, silent: silent, handle: handle)
             cmd.issue!
             cmd.result
           end
 
-          sig {params(driver: Driver, command: String, silent: T::Boolean, handle: T.any(IO, StringIO)).void}
-          def initialize(driver, command, silent: false, handle: STDOUT)
+          sig {params(driver: Driver).returns(Commander)}
+          def self.commander(driver)
+            Commander.new(driver)
+          end
+
+          sig {params(command: String, driver: T.nilable(Driver), silent: T::Boolean, handle: Handle).void}
+          def initialize(command, driver: nil, silent: false, handle: STDOUT)
             @command = command
             @driver = driver
             @silent = silent
@@ -35,11 +42,11 @@ module Spud
           def issue!
             capturer = StringIO.new
 
-            Open3.popen2e(@command) do |_stdin, stdout, thread|
-              @driver.register_subprocess(thread.pid)
+            Open3.popen2e(@command) do |_, out, thread|
+              @driver&.register_subprocess(thread.pid)
 
               loop do
-                line = stdout.gets
+                line = out.gets
                 break unless line
 
                 @handle.write line unless @silent
@@ -49,7 +56,21 @@ module Spud
               @result = Result.new(capturer.string, T.cast(thread.value, Process::Status))
             end
 
-            @driver.register_subprocess(nil)
+            @driver&.register_subprocess(nil)
+          end
+
+          class Commander
+            extend T::Sig
+
+            sig {params(driver: Driver).void}
+            def initialize(driver)
+              @driver = driver
+            end
+
+            sig {params(command: String, silent: T::Boolean, handle: Handle).returns(Result)}
+            def call(command, silent: false, handle: STDOUT)
+              Command.(command, driver: @driver, silent: silent, handle: handle)
+            end
           end
         end
       end

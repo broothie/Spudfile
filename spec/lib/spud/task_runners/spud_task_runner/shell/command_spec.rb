@@ -6,9 +6,8 @@ describe Spud::TaskRunners::SpudTaskRunner::Shell::Command do
   let(:handle) { StringIO.new }
   let(:silent) { false }
   let(:command) { 'echo "Hello, World!"' }
-  let(:driver) { Spud::Driver.new }
   subject(:result) do
-    Spud::TaskRunners::SpudTaskRunner::Shell::Command.(driver, command, silent: silent, handle: handle)
+    Spud::TaskRunners::SpudTaskRunner::Shell::Command.(command, silent: silent, handle: handle)
   end
 
   describe 'command issuing' do

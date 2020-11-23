@@ -1,5 +1,6 @@
 # typed: true
 require 'sorbet-runtime'
+require 'forwardable'
 
 module Spud
   module TaskRunners
@@ -21,7 +22,7 @@ module Spud
             :stopped?,
             :stopsig,
             :success?,
-            :termsig?,
+            :termsig,
             :to_i
 
           sig {params(output: String, status: Process::Status).void}

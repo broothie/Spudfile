@@ -15,42 +15,43 @@ module Spud
         def initialize(driver, filename)
           @__filename = filename
           @__driver = driver
+          @__commander = Shell::Command.commander(driver)
         end
 
         sig {params(command: String).returns(Shell::Result)}
         def sh(command)
           puts command
-          Shell::Command.(@__driver, command)
+          @__commander.(command)
         end
 
         sig {params(command: String).returns(Shell::Result)}
         def shh(command)
-          Shell::Command.(@__driver, command)
+          @__commander.(command)
         end
 
         sig {params(command: String).returns(Shell::Result)}
         def shhh(command)
-          Shell::Command.(@__driver, command, silent: true)
+          @__commander.(command, silent: true)
         end
 
         sig {params(command: String).returns(Shell::Result)}
         def sh!(command)
           puts command
-          result = Shell::Command.(@__driver, command)
+          result = @__commander.(command)
           raise Error, "sh failed for '#{command}'" unless result.success?
           result
         end
 
         sig {params(command: String).returns(Shell::Result)}
         def shh!(command)
-          result = Shell::Command.(@__driver, command)
+          result = @__commander.(command)
           raise Error, "sh failed for '#{command}'" unless result.success?
           result
         end
 
         sig {params(command: String).returns(Shell::Result)}
         def shhh!(command)
-          result = Shell::Command.(@__driver, command, silent: true)
+          result = @__commander.(command, silent: true)
           raise Error, "sh failed for '#{command}'" unless result.success?
           result
         end

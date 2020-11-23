@@ -2,10 +2,9 @@
 require 'stringio'
 
 describe Spud::TaskRunners::SpudTaskRunner::Shell::Result do
-  let(:driver) { Spud::Driver.new }
   let(:command) { 'echo "Hello, World!"' }
   subject(:result) do
-    Spud::TaskRunners::SpudTaskRunner::Shell::Command.(driver, command, handle: StringIO.new)
+    Spud::TaskRunners::SpudTaskRunner::Shell::Command.(command, handle: StringIO.new)
   end
 
   it 'acts like a string' do
@@ -13,9 +12,11 @@ describe Spud::TaskRunners::SpudTaskRunner::Shell::Result do
     expect(result).to eq "Hello, World!\n"
   end
 
-  it 'acts like a Process::Status' do
+  describe 'acts like a Process::Status' do
     %i[exited? exitstatus pid signaled? stopped? stopsig success? termsig].each do |method|
-      expect(result.respond_to?(method)).to be true
+      it "implements #{method}" do
+        expect(result.respond_to?(method)).to be true
+      end
     end
   end
 end
