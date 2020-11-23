@@ -162,8 +162,8 @@ webpack index.js
 
 ## TODO
 
-- [ ] Better spec coverage
-- [ ] Return result of invoke
+- [x] Better spec coverage
+- [x] Return result of invoke
 - [ ] Allow helper methods
 - [x] File dependencies
 - [x] Task inspection

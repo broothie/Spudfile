@@ -72,8 +72,9 @@ module Spud
           @__driver.invoke(task, ordered, named)
         end
 
-        def method_missing(symbol, *ordered, **named)
-          task = symbol.to_s
+        sig {params(task: Symbol, ordered: String, named: String).returns(T.untyped)}
+        def method_missing(task, *ordered, **named)
+          task = task.to_s
           task = task.include?('.') ? task : Task.qualified_name(@__filename, task)
           @__driver.invoke(task, ordered, named)
         end

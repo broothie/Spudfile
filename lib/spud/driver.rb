@@ -65,7 +65,9 @@ module Spud
       raise error if debug?
     end
 
-    sig {params(name: String, ordered: T::Array[String], named: T::Hash[T.any(String, Symbol), String]).void}
+    sig do
+      params(name: String, ordered: T::Array[String], named: T::Hash[T.any(String, Symbol), String]).returns(T.untyped)
+    end
     def invoke(name, ordered, named)
       get_task(name).invoke(ordered, stringify_keys(named))
     end
