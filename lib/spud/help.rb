@@ -1,10 +1,13 @@
 # typed: true
+require 'sorbet-runtime'
 require 'stringio'
 require 'spud/version'
 
 module Spud
   module Help
-    # @return [void]
+    extend T::Sig
+
+    sig {void}
     def self.print!
       puts <<~HELP
         spud #{VERSION}

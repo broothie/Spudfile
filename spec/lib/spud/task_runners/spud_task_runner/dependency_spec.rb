@@ -9,7 +9,9 @@ describe Spud::TaskRunners::SpudTaskRunner::Dependency do
 
   it 'says up to date when target after source' do
     source = Tempfile.new('source')
+    sleep(0.05)
     target = Tempfile.new('target')
+    sleep(0.05)
     close_all(source, target)
 
     dependency = Spud::TaskRunners::SpudTaskRunner::Dependency.new(source.path, target.path)
@@ -18,7 +20,9 @@ describe Spud::TaskRunners::SpudTaskRunner::Dependency do
 
   it 'says up to date when multiple targets after multiple sources' do
     sources = [Tempfile.new('source_1'), Tempfile.new('source_2')]
+    sleep(0.05)
     targets = [Tempfile.new('target_1'), Tempfile.new('target_2')]
+    sleep(0.05)
     close_all(sources, targets)
 
     dependency = Spud::TaskRunners::SpudTaskRunner::Dependency.new(sources.map(&:path), targets.map(&:path))

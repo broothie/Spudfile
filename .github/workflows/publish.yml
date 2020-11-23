@@ -21,7 +21,7 @@ jobs:
           bundler-cache: true
 
       - name: Check for version change
-        run: spud gem.check_changed
+        run: bundle exec spud gem.check_changed
 
       - name: Push to RubyGems
         env:

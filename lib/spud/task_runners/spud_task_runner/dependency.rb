@@ -1,4 +1,5 @@
 # typed: true
+require 'sorbet-runtime'
 
 module Spud
   module TaskRunners

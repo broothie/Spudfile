@@ -1,4 +1,5 @@
 # typed: true
+require 'sorbet-runtime'
 require 'spud/error'
 require 'spud/help'
 require 'spud/lister'

@@ -1,7 +1,11 @@
 # typed: true
+require 'sorbet-runtime'
+
 module Spud
   class Error < StandardError
-    # @return [String]
+    extend T::Sig
+
+    sig {override.returns(String)}
     def message
       "spud: #{super}"
     end
