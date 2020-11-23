@@ -15,5 +15,5 @@ jobs:
         env:
           API_TOKEN: ${{ secrets.SPUD_GITHUB_API_TOKEN }}
         run: |
-          git remote add brew "https://$API_TOKEN@github.com/broothie/homebrew-spud.git"
+          git remote add brew "https://broothie:$API_TOKEN@github.com/broothie/homebrew-spud.git"
           git push brew
