@@ -52,7 +52,7 @@ check_changed do
   local = version
   deployed = pushed
 
-  exit 1 unless semver_greater?(local, deployed)
+  puts 'changed' if semver_greater?(local, deployed)
 end
 
 semver_greater? do |a, b|

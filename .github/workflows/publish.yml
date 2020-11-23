@@ -20,13 +20,12 @@ jobs:
         with:
           bundler-cache: true
 
-      - name: Check for version change
-        run: bundle exec spud gem.check_changed
-
       - name: Push to RubyGems
         env:
           API_KEY: "${{ secrets.RUBYGEMS_API_KEY }}"
         run: |
+          if [[ $(bundle exec spud gem.check_changed) != 'changed' ]]; then exit 0; fi
+
           mkdir -p $HOME/.gem
           touch $HOME/.gem/credentials
           chmod 0600 $HOME/.gem/credentials
