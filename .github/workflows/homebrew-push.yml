@@ -12,6 +12,8 @@ jobs:
       - uses: actions/checkout@v2
 
       - name: Update homebrew-spud
+        env:
+          API_TOKEN: ${{ secrets.SPUD_GITHUB_API_TOKEN }}
         run: |
-          git remote add brew "https://$SPUD_GITHUB_API_TOKEN@github.com/broothie/homebrew-spud.git"
+          git remote add brew "https://$API_TOKEN@github.com/broothie/homebrew-spud.git"
           git push brew
