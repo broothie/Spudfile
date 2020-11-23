@@ -58,7 +58,7 @@ module Spud
     rescue Error => error
       puts error.message
       raise error if debug?
-    rescue SystemExit, Interrupt => error
+    rescue Interrupt => error
       puts "handled interrupt #{error}" if debug?
     rescue => error
       puts "fatal: #{error.message}"

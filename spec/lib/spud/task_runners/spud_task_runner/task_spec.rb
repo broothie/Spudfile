@@ -86,4 +86,30 @@ describe Spud::TaskRunners::SpudTaskRunner::Task do
       end
     end
   end
+
+  describe 'throw and catch' do
+    it 'returns the last evaluated thing in the block' do
+      result = catch :something do
+        'value'
+      end
+
+      expect(result).to eq 'value'
+    end
+
+    it 'returns nil when thrown without second arg' do
+      result = catch :something do
+        throw :something
+      end
+
+      expect(result).to be_nil
+    end
+
+    it 'returns the value thrown when provided' do
+      result = catch :something do
+        throw :something, 'other value'
+      end
+
+      expect(result).to eq 'other value'
+    end
+  end
 end

@@ -29,9 +29,7 @@ end
 
 # Prints current local version
 version do
-  version = File.read('lib/spud/version.rb').match(/\d+\.\d+\.\d+/).to_s
-  puts version
-  version
+  p File.read('lib/spud/version.rb').match(/\d+\.\d+\.\d+/).to_s
 end
 
 # Prints currently pushed gem version
@@ -39,9 +37,7 @@ pushed do
   res = Net::HTTP.get(URI('https://rubygems.org/api/v1/gems/spud.json'))
   json = JSON.parse(res)
 
-  version = json['version']
-  puts version
-  version
+  p json['version']
 end
 
 clean do
@@ -50,4 +46,21 @@ end
 
 bump do
   sh 'bump lib/spud/version.rb'
+end
+
+check_changed do
+  local = version
+  deployed = pushed
+
+  exit 1 unless semver_greater?(local, deployed)
+end
+
+semver_greater? do |a, b|
+  a_major, a_minor, a_patch = a.split('.')
+  b_major, b_minor, b_patch = b.split('.')
+
+  halt false if a_major < b_major
+  halt false if a_minor < b_minor
+
+  a_patch > b_patch
 end

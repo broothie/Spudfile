@@ -53,7 +53,7 @@ module Spud
 
         sleep(0.1)
       end
-    rescue SystemExit, Interrupt => error
+    rescue Interrupt => error
       puts "handled interrupt #{error}" if @driver.debug?
     end
 

@@ -71,10 +71,12 @@ module Spud
 
           check_required_args!(ordered)
 
-          if args.any_named?
-            T.unsafe(task_dsl).instance_exec(*ordered, **symbolize_keys(named), &@block)
-          else
-            T.unsafe(task_dsl).instance_exec(*ordered, &@block)
+          catch :halt do
+            if args.any_named?
+              T.unsafe(task_dsl).instance_exec(*ordered, **symbolize_keys(named), &@block)
+            else
+              T.unsafe(task_dsl).instance_exec(*ordered, &@block)
+            end
           end
         rescue ArgumentError => error
           raise Error, "invocation of '#{name}' with #{error.message}"

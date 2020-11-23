@@ -164,7 +164,8 @@ webpack index.js
 
 - [x] Better spec coverage
 - [x] Return result of invoke
-- [ ] Allow helper methods
+- [ ] Halt keyword
+- [x] Allow helper methods
 - [x] File dependencies
 - [x] Task inspection
 - [x] Task watching

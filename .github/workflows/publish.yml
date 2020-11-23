@@ -17,6 +17,14 @@ jobs:
 
       - name: Set up Ruby
         uses: ruby/setup-ruby@v1
+        with:
+          bundler-cache: true
+
+      - name: Set up Bundler
+        run: gem install bundler -v 2.0.2
+
+      - name: Check for version change
+        run: spud gem.check_changed
 
       - name: Push to RubyGems
         env:

@@ -24,6 +24,11 @@ module Spud
           end
         end
 
+        sig {params(value: T.untyped).void}
+        def halt(value = nil)
+          value ? throw(:halt, value) : throw(:halt)
+        end
+
         sig {params(command: String).returns(Shell::Result)}
         def sh(command)
           puts command
