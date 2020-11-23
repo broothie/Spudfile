@@ -37,6 +37,7 @@ module Spud
         sig {override.params(ordered: T::Array[String], named: T::Hash[String, String]).returns(T.untyped)}
         def invoke(ordered, named)
           system('make', name)
+
         end
 
         sig {override.returns(String)}
@@ -53,7 +54,7 @@ module Spud
           cursor += 1 until lines[cursor]&.start_with?(name)
 
           builder = StringIO.new
-          until lines[cursor]&.empty?
+          while lines[cursor] && !lines[cursor]&.empty?
             builder.puts lines[cursor]
             cursor += 1
           end

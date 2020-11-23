@@ -2,8 +2,8 @@
 require 'sorbet-runtime'
 require 'spud/error'
 require 'spud/driver'
-require 'spud/task_runners/spud_task_runner/shell/command'
-require 'spud/task_runners/spud_task_runner/shell/result'
+require 'spud/shell/command'
+require 'spud/shell/result'
 
 module Spud
   module TaskRunners

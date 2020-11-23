@@ -1,10 +1,10 @@
 # typed: false
 require 'stringio'
 
-describe Spud::TaskRunners::SpudTaskRunner::Shell::Result do
+describe Spud::Shell::Result do
   let(:command) { 'echo "Hello, World!"' }
   subject(:result) do
-    Spud::TaskRunners::SpudTaskRunner::Shell::Command.(command, handle: StringIO.new)
+    Spud::Shell::Command.(command, handle: StringIO.new)
   end
 
   it 'acts like a string' do

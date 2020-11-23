@@ -21,10 +21,7 @@ module Spud
 
       sig do
         abstract
-          .params(
-            ordered: T::Array[String],
-            named: T::Hash[String, String],
-          )
+          .params(ordered: T::Array[String], named: T::Hash[String, String])
           .returns(T.untyped)
       end
       def invoke(ordered, named); end

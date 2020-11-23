@@ -13,3 +13,12 @@ clean do
   invoke 'gem.clean'
   invoke 'sandbox.clean'
 end
+
+things do
+  res = all
+  puts res: res
+end
+
+def helper
+  puts 'helping...'
+end

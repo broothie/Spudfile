@@ -5808,32 +5808,17 @@ class Spud::Lister
   extend ::T::Private::Methods::SingletonMethodHooks
 end
 
-class Spud::TaskArg
+class Spud::Shell::Command::Commander
   extend ::T::Private::Methods::MethodHooks
   extend ::T::Private::Methods::SingletonMethodHooks
 end
 
-class Spud::TaskArgs
+class Spud::Shell::Command
   extend ::T::Private::Methods::MethodHooks
   extend ::T::Private::Methods::SingletonMethodHooks
 end
 
-class Spud::TaskRunners::SpudTaskRunner::Dependency
-  extend ::T::Private::Methods::MethodHooks
-  extend ::T::Private::Methods::SingletonMethodHooks
-end
-
-class Spud::TaskRunners::SpudTaskRunner::FileDSL
-  extend ::T::Private::Methods::MethodHooks
-  extend ::T::Private::Methods::SingletonMethodHooks
-end
-
-class Spud::TaskRunners::SpudTaskRunner::Shell::Command
-  extend ::T::Private::Methods::MethodHooks
-  extend ::T::Private::Methods::SingletonMethodHooks
-end
-
-class Spud::TaskRunners::SpudTaskRunner::Shell::Result
+class Spud::Shell::Result
   def coredump?(*args, &block); end
 
   def exited?(*args, &block); end
@@ -5850,12 +5835,32 @@ class Spud::TaskRunners::SpudTaskRunner::Shell::Result
 
   def success?(*args, &block); end
 
-  def termsig?(*args, &block); end
+  def termsig(*args, &block); end
 
   def to_i(*args, &block); end
 end
 
-class Spud::TaskRunners::SpudTaskRunner::Shell::Result
+class Spud::Shell::Result
+  extend ::T::Private::Methods::MethodHooks
+  extend ::T::Private::Methods::SingletonMethodHooks
+end
+
+class Spud::TaskArg
+  extend ::T::Private::Methods::MethodHooks
+  extend ::T::Private::Methods::SingletonMethodHooks
+end
+
+class Spud::TaskArgs
+  extend ::T::Private::Methods::MethodHooks
+  extend ::T::Private::Methods::SingletonMethodHooks
+end
+
+class Spud::TaskRunners::SpudTaskRunner::Dependency
+  extend ::T::Private::Methods::MethodHooks
+  extend ::T::Private::Methods::SingletonMethodHooks
+end
+
+class Spud::TaskRunners::SpudTaskRunner::FileDSL
   extend ::T::Private::Methods::MethodHooks
   extend ::T::Private::Methods::SingletonMethodHooks
 end

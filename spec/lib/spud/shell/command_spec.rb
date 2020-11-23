@@ -2,12 +2,12 @@
 require 'sorbet-runtime'
 require 'stringio'
 
-describe Spud::TaskRunners::SpudTaskRunner::Shell::Command do
+describe Spud::Shell::Command do
   let(:handle) { StringIO.new }
   let(:silent) { false }
   let(:command) { 'echo "Hello, World!"' }
   subject(:result) do
-    Spud::TaskRunners::SpudTaskRunner::Shell::Command.(command, silent: silent, handle: handle)
+    Spud::Shell::Command.(command, silent: silent, handle: handle)
   end
 
   describe 'command issuing' do
