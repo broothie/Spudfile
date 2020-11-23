@@ -19,12 +19,6 @@ jobs:
         with:
           bundler-cache: true
 
-      - name: Set up Bundler
-        run: gem install bundler -v 2.0.2
-
-      - name: Install dependencies
-        run: bundle install
-
       - name: Run tests
         run: bundle exec rspec
 

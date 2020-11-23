@@ -14,6 +14,14 @@ Spud is a task runner, in the form of a [ruby](https://www.ruby-lang.org) [DSL](
 $ gem install spud
 ```
 
+or 
+
+```ruby
+# Gemfile
+
+gem 'spud'
+```
+
 ## Usage
 
 Tasks are defined in a `Spudfile`:
@@ -164,7 +172,7 @@ webpack index.js
 
 - [x] Better spec coverage
 - [x] Return result of invoke
-- [ ] Halt keyword
+- [x] Halt keyword
 - [x] Allow helper methods
 - [x] File dependencies
 - [x] Task inspection

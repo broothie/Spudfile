@@ -14,9 +14,10 @@ Gem::Specification.new do |gem|
   gem.files                 = Dir['lib/**/*.rb']
   gem.executables           << 'spud'
 
+  gem.add_runtime_dependency 'sorbet-runtime', '~> 0.5.6100'
+
   gem.add_development_dependency 'rspec', '~> 3.0'
   gem.add_development_dependency 'pry', '~> 0.13.1'
   gem.add_development_dependency 'byebug', '~> 11.0'
   gem.add_development_dependency 'sorbet', '~> 0.5.6100'
-  gem.add_development_dependency 'sorbet-runtime', '~> 0.5.6100'
 end
