@@ -1,0 +1,17 @@
+name: Homebrew Push
+
+on:
+  push:
+    branches: [main]
+
+jobs:
+  push:
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v2
+
+      - name: Update homebrew-spud
+        run: |
+          git remote add brew "https://$SPUD_GITHUB_API_TOKEN@github.com/broothie/homebrew-spud.git
+          git push brew
