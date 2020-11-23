@@ -22,13 +22,16 @@ end
 # Builds and pushes new gem
 publish do |otp|
   clean
+  bump if version == pushed
   build
   push otp
 end
 
 # Prints current local version
 version do
-  puts File.read('lib/spud/version.rb').match(/\d+\.\d+\.\d+/)
+  version = File.read('lib/spud/version.rb').match(/\d+\.\d+\.\d+/).to_s
+  puts version
+  version
 end
 
 # Prints currently pushed gem version
@@ -36,7 +39,9 @@ pushed do
   res = Net::HTTP.get(URI('https://rubygems.org/api/v1/gems/spud.json'))
   json = JSON.parse(res)
 
-  puts json['version']
+  version = json['version']
+  puts version
+  version
 end
 
 clean do

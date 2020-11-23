@@ -4,6 +4,7 @@ require 'spud/error'
 require 'spud/driver'
 require 'spud/shell/command'
 require 'spud/shell/result'
+require 'spud/task_runners/spud_task_runner/file_dsl'
 
 module Spud
   module TaskRunners
@@ -11,11 +12,16 @@ module Spud
       class TaskDSL
         extend T::Sig
 
-        sig {params(driver: Driver, filename: String).void}
-        def initialize(driver, filename)
+        sig {params(driver: Driver, filename: String, file_dsl: FileDSL).void}
+        def initialize(driver, filename, file_dsl)
           @__filename = filename
           @__driver = driver
+
           @__commander = Shell::Command.commander(driver)
+
+          file_dsl.singleton_methods.each do |method|
+            define_singleton_method(method, &file_dsl.singleton_method(method))
+          end
         end
 
         sig {params(command: String).returns(Shell::Result)}

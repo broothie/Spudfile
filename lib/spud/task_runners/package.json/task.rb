@@ -3,6 +3,7 @@ require 'sorbet-runtime'
 require 'json'
 require 'spud/driver'
 require 'spud/task_args'
+require 'spud/shell/command'
 require 'spud/task_runners/task'
 
 module Spud
@@ -52,7 +53,7 @@ module Spud
 
         sig {override.params(ordered: T::Array[String], named: T::Hash[String, String]).returns(T.untyped)}
         def invoke(ordered, named)
-          system("#{@command} run #{name}")
+          Shell::Command.("#{@command} run #{name}", driver: @driver)
         end
 
         sig {override.returns(String)}

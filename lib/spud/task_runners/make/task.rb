@@ -2,6 +2,7 @@
 require 'sorbet-runtime'
 require 'stringio'
 require 'spud/driver'
+require 'spud/shell/command'
 require 'spud/task_runners/task'
 
 module Spud
@@ -36,8 +37,7 @@ module Spud
 
         sig {override.params(ordered: T::Array[String], named: T::Hash[String, String]).returns(T.untyped)}
         def invoke(ordered, named)
-          system('make', name)
-
+          Shell::Command.("make #{name}", driver: @driver)
         end
 
         sig {override.returns(String)}

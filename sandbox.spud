@@ -21,6 +21,7 @@ clean do
   sh 'rm -rf Makefile'
 end
 
+# Long running task. Starts a fileserver
 fileserver do
   sh 'fileserver'
 end

@@ -43,6 +43,7 @@ module Spud
             name: Task.qualified_name(@__filename, name.to_s),
             filename: @__filename,
             dependencies: dependencies,
+            file_dsl: self,
             &block
           )
         end

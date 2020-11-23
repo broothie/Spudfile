@@ -49,23 +49,24 @@ module Spud
             name: String,
             filename: String,
             dependencies: T::Hash[T.any(String, T::Array[String]), T.any(String, T::Array[String])],
+            file_dsl: FileDSL,
             block: Proc,
           )
           .void
         end
-        def initialize(driver:, name:, filename:, dependencies:, &block)
+        def initialize(driver:, name:, filename:, dependencies:, file_dsl:, &block)
           @driver = driver
           @name = name
           @filename = filename
           @dependencies = dependencies.map { |to, from| Dependency.new(to, from) }
+          @file_dsl = file_dsl
           @block = block
         end
 
         sig {override.params(ordered: T::Array[String], named: T::Hash[String, String]).returns(T.untyped)}
         def invoke(ordered, named)
           if up_to_date?
-            puts "'#{name}' up to date"
-            return nil
+            raise Error, "'#{name}' up to date"
           end
 
           check_required_args!(ordered)
@@ -131,9 +132,9 @@ module Spud
           @dependencies.all?(&:up_to_date?)
         end
 
-        sig {returns(SpudTaskRunner::TaskDSL)}
+        sig {returns(TaskDSL)}
         def task_dsl
-          @task_dsl ||= TaskDSL.new(@driver, @filename)
+          @task_dsl ||= TaskDSL.new(@driver, @filename, @file_dsl)
         end
 
         sig {params(hash: T::Hash[T.any(String, Symbol), T.untyped]).returns(T::Hash[Symbol, T.untyped])}
