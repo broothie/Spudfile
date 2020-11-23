@@ -177,5 +177,10 @@ webpack index.js
 - [x] File dependencies
 - [x] Task inspection
 - [x] Task watching
+- [ ] Options keyword
+- [ ] Namespace keyword
+- [ ] Watch dependencies
+- [ ] Shorthands?
+- [ ] Fix infinite depth Spudfile finder
 - [ ] Rake integration
 - [ ] docker-compose integration
