@@ -1,0 +1,28 @@
+name: Publish Gem
+
+on:
+  push:
+    branches: [main]
+
+jobs:
+  publish:
+    name: Publish to RubyGems
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v2
+      - name: Set up Ruby 2.3.0
+        uses: actions/setup-ruby@v1
+        with:
+          ruby-version: 2.3.0
+
+      - name: Push to RubyGems
+        env:
+          API_KEY: "${{ secrets.RUBYGEMS_API_KEY }}"
+        run: |
+          mkdir -p $HOME/.gem
+          touch $HOME/.gem/credentials
+          chmod 0600 $HOME/.gem/credentials
+          printf -- "---\n:rubygems_api_key: ${API_KEY}\n" > $HOME/.gem/credentials
+          gem build *.gemspec
+          gem push *.gem
