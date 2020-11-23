@@ -1,8 +1,11 @@
 name: Publish Gem
 
 on:
-  push:
+  workflow_run:
+    workflows: [Check]
     branches: [main]
+    types:
+      - completed
 
 jobs:
   publish:
@@ -11,10 +14,9 @@ jobs:
 
     steps:
       - uses: actions/checkout@v2
-      - name: Set up Ruby 2.3.0
+
+      - name: Set up Ruby 2.3.x
         uses: actions/setup-ruby@v1
-        with:
-          ruby-version: 2.3.0
 
       - name: Push to RubyGems
         env:
