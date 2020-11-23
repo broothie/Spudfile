@@ -10,7 +10,7 @@ Gem::Specification.new do |gem|
   gem.author = 'Andrew Booth'
   gem.email  = 'andrew@andrewbooth.xyz'
 
-  gem.required_ruby_version = '2.3.0'
+  gem.required_ruby_version = '>= 2.3.0'
   gem.files                 = Dir['lib/**/*.rb']
   gem.executables           << 'spud'
 
