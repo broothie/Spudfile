@@ -1,4 +1,4 @@
-# `spud` 🥔
+# 🥔 Spud 🥔
 
 Spud is a task runner, in the form of a [ruby](https://www.ruby-lang.org) [DSL](https://en.wikipedia.org/wiki/Domain-specific_language).
 
@@ -10,11 +10,23 @@ Spud is a task runner, in the form of a [ruby](https://www.ruby-lang.org) [DSL](
 
 ## Installation
 
+Spud requires Ruby >= `2.3.0`.
+
+### As a Gem
+
 ```shell script
 $ gem install spud
 ```
 
 or 
+
+### Via Bundler
+
+```shell script
+$ bundle add spud
+```
+
+or
 
 ```ruby
 # Gemfile
@@ -62,10 +74,10 @@ Hello Alice
 ## Spec by Example
 
 A task with 4 arguments:
-- a: required ordered
-- b: optional ordered
-- c: required named
-- d: optional named
+- `a`: required ordered
+- `b`: optional ordered
+- `c`: required named
+- `d`: optional named
 ```ruby
 fancy do |a, b = '2', c:, d: '4'|
   p [a, b, c, d]
@@ -128,6 +140,7 @@ greet do |name = 'Alice'|
   puts "Hello #{name}"
 end
 ```
+
 ```shell script
 $ spud greet Bob
 ```
@@ -138,6 +151,7 @@ task :greet, [:name] do |t, args|
   puts "Hello #{args.fetch(:name, 'Alice')}"
 end
 ```
+
 ```shell script
 $ rake greet\[Bob\]
 # or
@@ -177,6 +191,7 @@ webpack index.js
 - [x] File dependencies
 - [x] Task inspection
 - [x] Task watching
+- [ ] Add titles to task list when multiple columns
 - [ ] Options keyword
 - [ ] Namespace keyword
 - [ ] Watch dependencies
