@@ -1,4 +1,16 @@
 
+publish do |message = nil,  segment: 'patch'|
+  clean
+
+  new_version = invoke!('gem.bump', segment).split('->').last.strip
+  puts new_version
+  sh 'bundle'
+
+  message ||= "publish #{new_version}"
+  sh "git commit -am '#{message}'"
+  sh 'git push'
+end
+
 check do
   spec
   sorbet

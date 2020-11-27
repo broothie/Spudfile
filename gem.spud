@@ -1,10 +1,23 @@
 require 'net/http'
 require 'json'
-require_relative 'lib/spud/version'
+
+# Build and install local version of gem
+local do
+  build
+  install
+end
+
+build ['**/*.rb', '*.gemspec'] => '*.gem' do
+  sh 'gem build'
+end
+
+install do
+  sh 'gem install *.gem'
+end
 
 # Bumps the gem using https://github.com/broothie/bump
-bump do
-  sh 'bump lib/spud/version.rb'
+bump do |segment = 'patch'|
+  sh "bump -s #{segment} lib/spud/version.rb"
 end
 
 # Prints current local version
