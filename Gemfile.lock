@@ -1,7 +1,7 @@
 PATH
   remote: .
   specs:
-    spud (0.2.7)
+    spud (0.2.8)
       rake (~> 13.0)
       sorbet-runtime (~> 0.5.6100)
 
@@ -31,7 +31,7 @@ GEM
     rspec-support (3.10.0)
     sorbet (0.5.6101)
       sorbet-static (= 0.5.6101)
-    sorbet-runtime (0.5.6101)
+    sorbet-runtime (0.5.6111)
     sorbet-static (0.5.6101-universal-darwin-14)
 
 PLATFORMS
