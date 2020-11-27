@@ -1,4 +1,5 @@
 require 'json'
+require 'yaml'
 
 create do
   # Make
@@ -11,6 +12,20 @@ create do
   json = JSON.parse(File.read('package.json'))
   json['scripts'] = { 'js' => 'touch index.js' }
   File.write('package.json', json.to_json)
+
+  # Rake
+  # File.write('Rakefile', "\n# aw yeah\ndesc 'yard work'\ntask :yard, [:things] do |t, args|\n  things = args.fetch(:things, 'leaves')\n  puts \"raking the \#{things}...\"\nend\n")
+  File.write 'Rakefile', <<~RAKEFILE
+    # aw yeah
+    desc 'yard work'
+    task :yard, [:things] do |t, args|
+      things = args.fetch(:things, 'leaves')
+      puts "raking the \#{things}..."
+    end
+  RAKEFILE
+
+  # docker-compose
+  File.write('docker-compose.yml', YAML.dump('version' => '3', 'services' => { 'redis' => { 'image' => 'redis' } }))
 end
 
 clean do
@@ -19,6 +34,12 @@ clean do
 
   # Make
   sh 'rm -rf Makefile'
+
+  # Rake
+  sh 'rm -rf Rakefile'
+
+  # docker-compose
+  sh 'rm -rf docker-compose.yml'
 end
 
 # Long running task. Starts a fileserver

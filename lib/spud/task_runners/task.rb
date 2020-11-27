@@ -17,13 +17,9 @@ module Spud
       def name; end
 
       sig {abstract.returns(String)}
-      def filename; end
+      def source; end
 
-      sig do
-        abstract
-          .params(ordered: T::Array[String], named: T::Hash[String, String])
-          .returns(T.untyped)
-      end
+      sig {abstract.params(ordered: T::Array[String], named: T::Hash[String, String]).returns(T.untyped)}
       def invoke(ordered, named); end
 
       sig {overridable.returns(TaskArgs)}

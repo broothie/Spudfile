@@ -19,6 +19,5 @@ end
 
 clean do
   sh 'rm -rf .byebug_history .rspec_status'
-  invoke 'gem.clean'
   invoke 'sandbox.clean'
 end

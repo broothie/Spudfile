@@ -7,6 +7,11 @@ module Spud
   class Lister
     extend T::Sig
 
+    TASKS_HEADER = T.let('TASK', String)
+    ORDERED_HEADER = T.let('ORDERED ARGS', String)
+    NAMED_HEADER = T.let('NAMED ARGS', String)
+    SOURCES_HEADER = T.let('SOURCE', String)
+
     sig {params(tasks: T::Array[TaskRunners::Task]).void}
     def initialize(tasks)
       @tasks = tasks
@@ -15,6 +20,27 @@ module Spud
     sig {void}
     def list_tasks!
       builder = StringIO.new
+
+      if show_headers?
+        builder.write TASKS_HEADER.ljust(max_task_length)
+
+        if show_ordered_args?
+          builder.write '  '
+          builder.write ORDERED_HEADER.ljust(max_ordered_string_length)
+        end
+
+        if show_named_args?
+          builder.write '  '
+          builder.write NAMED_HEADER.ljust(max_named_string_length)
+        end
+
+        if show_sources?
+          builder.write '  '
+          builder.write SOURCES_HEADER
+        end
+
+        builder.write "\n"
+      end
 
       @tasks.each do |task|
         builder.write task.name.ljust(max_task_length)
@@ -29,9 +55,9 @@ module Spud
           builder.write task.args.named.join(' ').ljust(max_named_string_length)
         end
 
-        if show_filenames?
+        if show_sources?
           builder.write '  '
-          builder.write task.filename
+          builder.write task.source
         end
 
         builder.write "\n"
@@ -40,21 +66,19 @@ module Spud
       puts builder.string
     end
 
-    sig {void}
-    def list_filenames!
-      puts filenames.join("\n")
-    end
-
-    sig {returns(T::Array[String])}
-    def filenames
-      @filenames ||= @tasks.map(&:filename).uniq
-    end
-
     private
+
+    sig {returns(T::Boolean)}
+    def show_headers?
+      @show_headers ||= show_ordered_args? || show_named_args? || show_sources?
+    end
 
     sig {returns(Integer)}
     def max_task_length
-      @max_task_length ||= @tasks.map { |task| task.name.length }.max
+      @max_task_length ||= @tasks
+        .map { |task| task.name.length }
+        .tap { |lengths| lengths.push(TASKS_HEADER.length) if show_headers? }
+        .max
     end
 
     sig {returns(Integer)}
@@ -62,6 +86,7 @@ module Spud
       @max_ordered_string_length ||= @tasks
         .map { |task| task.args.ordered.join(' ') }
         .map(&:length)
+        .tap { |lengths| lengths.push(ORDERED_HEADER.length) if show_headers? }
         .max
     end
 
@@ -75,6 +100,7 @@ module Spud
       @max_named_string_length ||= @tasks
         .map { |task| task.args.named.join(' ') }
         .map(&:length)
+        .tap { |lengths| lengths.push(NAMED_HEADER.length) if show_headers? }
         .max
     end
 
@@ -84,8 +110,13 @@ module Spud
     end
 
     sig {returns(T::Boolean)}
-    def show_filenames?
-      filenames.length > 1
+    def show_sources?
+      sources.length > 1
+    end
+
+    sig {returns(T::Array[String])}
+    def sources
+      @filenames ||= @tasks.map(&:source).uniq
     end
   end
 end

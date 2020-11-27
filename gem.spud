@@ -1,35 +1,15 @@
 require 'net/http'
 require 'json'
+require_relative 'lib/spud/version'
 
-# Build and install local version of gem
-local do
-  build
-  install
-end
-
-build ['**/*.rb', '*.gemspec'] => '*.gem' do
-  sh 'gem build'
-end
-
-install do
-  sh 'gem install *.gem'
-end
-
-push do |otp|
-  sh "gem push --otp #{otp} *.gem"
-end
-
-# Builds and pushes new gem
-publish do |otp|
-  clean
-  bump if version == pushed
-  build
-  push otp
+# Bumps the gem using https://github.com/broothie/bump
+bump do
+  sh 'bump lib/spud/version.rb'
 end
 
 # Prints current local version
 version do
-  p File.read('lib/spud/version.rb').match(/\d+\.\d+\.\d+/).to_s
+  p Spud::VERSION
 end
 
 # Prints currently pushed gem version
@@ -40,14 +20,7 @@ pushed do
   p json['version']
 end
 
-clean do
-  sh 'rm -rf *.gem'
-end
-
-bump do
-  sh 'bump lib/spud/version.rb'
-end
-
+# Used in GH action
 check_changed do
   local = version
   deployed = pushed

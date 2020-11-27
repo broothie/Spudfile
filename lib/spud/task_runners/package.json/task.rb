@@ -36,8 +36,8 @@ module Spud
           end
 
           source = File.read('package.json')
-          json = JSON.parse(source)
-          scripts = json['scripts']
+          contents = JSON.parse(source)
+          scripts = contents['scripts']
           return [] unless scripts
 
           scripts.keys.map { |name| new(driver, name, command, scripts) }
@@ -53,11 +53,11 @@ module Spud
 
         sig {override.params(ordered: T::Array[String], named: T::Hash[String, String]).returns(T.untyped)}
         def invoke(ordered, named)
-          Shell::Command.("#{@command} run #{name}", driver: @driver)
+          system("#{@command} run #{name}")
         end
 
         sig {override.returns(String)}
-        def filename
+        def source
           'package.json'
         end
 

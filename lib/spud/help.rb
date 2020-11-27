@@ -1,4 +1,4 @@
-# typed: true
+# typed: strict
 require 'sorbet-runtime'
 require 'stringio'
 require 'spud/version'
@@ -18,7 +18,6 @@ module Spud
         options:
           -h, --help          show this help dialog
           -w, --watch <glob>  re-run task any time glob changes
-          -f, --files         list parsed files
           -i, --inspect       show details about a task
       HELP
     end

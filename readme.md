@@ -191,11 +191,11 @@ webpack index.js
 - [x] File dependencies
 - [x] Task inspection
 - [x] Task watching
-- [ ] Add titles to task list when multiple columns
+- [x] Add titles to task list when multiple columns
 - [ ] Options keyword
 - [ ] Namespace keyword
 - [ ] Watch dependencies
 - [ ] Shorthands?
-- [ ] Fix infinite depth Spudfile finder
-- [ ] Rake integration
-- [ ] docker-compose integration
+- [x] Fix infinite depth Spudfile finder
+- [x] Rake integration
+- [x] docker-compose integration

@@ -25,30 +25,30 @@ module Spud
 
           source = File.read('Makefile')
           T.unsafe(source.scan(/^(\S+):.*/)).map(&:first).map do |name|
-            new(driver, name)
+            new(driver, name, source)
           end
         end
 
-        sig {params(driver: Driver, name: String).void}
-        def initialize(driver, name)
+        sig {params(driver: Driver, name: String, make_source: String).void}
+        def initialize(driver, name, make_source)
           @driver = driver
           @name = name
+          @make_source = make_source
         end
 
         sig {override.params(ordered: T::Array[String], named: T::Hash[String, String]).returns(T.untyped)}
         def invoke(ordered, named)
-          Shell::Command.("make #{name}", driver: @driver)
+          system("make #{name}")
         end
 
         sig {override.returns(String)}
-        def filename
+        def source
           'Makefile'
         end
 
         sig {override.returns(String)}
         def details
-          source = File.read('Makefile')
-          lines = source.split("\n")
+          lines = @make_source.split("\n")
           cursor = 0
 
           cursor += 1 until lines[cursor]&.start_with?(name)

@@ -7,7 +7,6 @@ module Spud
       extend T::Sig
 
       attr_writer :help
-      attr_writer :files
       attr_writer :inspect
 
       sig {returns(T::Array[String])}
@@ -19,11 +18,6 @@ module Spud
       sig {returns(T::Boolean)}
       def help?
         !!@help
-      end
-
-      sig {returns(T::Boolean)}
-      def files?
-        !!@files
       end
 
       sig {returns(T::Boolean)}

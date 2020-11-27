@@ -15,6 +15,7 @@ Gem::Specification.new do |gem|
   gem.executables           << 'spud'
 
   gem.add_runtime_dependency 'sorbet-runtime', '~> 0.5.6100'
+  gem.add_runtime_dependency 'rake', '~> 13.0'
 
   gem.add_development_dependency 'rspec', '~> 3.0'
   gem.add_development_dependency 'pry', '~> 0.13.1'

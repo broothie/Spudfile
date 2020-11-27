@@ -54,7 +54,6 @@ module Spud
         case flag
         when '-h', '--help' then options.help = true
         when '-w', '--watch' then options.watches << take!
-        when '-f', '--files' then options.files = true
         when '-i', '--inspect' then options.inspect = true
         else raise Error, "invalid option: '#{flag}'"
         end

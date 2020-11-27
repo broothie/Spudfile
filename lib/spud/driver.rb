@@ -34,11 +34,6 @@ module Spud
         return
       end
 
-      if options.files?
-        lister.list_filenames!
-        return
-      end
-
       unless args.task
         lister.list_tasks!
         return

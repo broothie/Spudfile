@@ -16,8 +16,9 @@ module Spud
       class Task < TaskRunners::Task
         extend T::Sig
 
-        sig {override.returns(String)}
+        sig {returns(String)}
         attr_reader :filename
+        alias source filename
 
         sig {override.returns(String)}
         attr_reader :name
@@ -27,7 +28,7 @@ module Spud
 
         sig {override.params(driver: Driver).returns(T::Array[TaskRunners::Task])}
         def self.tasks(driver)
-          Dir['**/Spudfile', '**/*.spud'].flat_map { |filename| FileDSL.run(driver, filename) }
+          Dir['Spudfile', '*.spud'].flat_map { |filename| FileDSL.run(driver, filename) }
         end
 
         sig {params(filename: String, name: String).returns(String)}
