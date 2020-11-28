@@ -22,6 +22,11 @@ module Spud
       sig {abstract.params(ordered: T::Array[String], named: T::Hash[String, String]).returns(T.untyped)}
       def invoke(ordered, named); end
 
+      sig {overridable.returns(T::Array[String])}
+      def watches
+        []
+      end
+
       sig {overridable.returns(TaskArgs)}
       def args
         TaskArgs.new([])

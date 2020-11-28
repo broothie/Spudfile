@@ -43,7 +43,7 @@ clean do
 end
 
 # Long running task. Starts a fileserver
-fileserver do
+fileserver watch: 'lib/**/*.rb' do
   sh 'fileserver'
 end
 

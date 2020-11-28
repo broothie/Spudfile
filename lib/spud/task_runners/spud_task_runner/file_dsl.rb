@@ -33,16 +33,23 @@ module Spud
         sig do
           params(
             name: T.any(String, Symbol),
-            dependencies: T::Hash[T.any(String, T::Array[String]), T.any(String, T::Array[String])],
+            opts: T::Hash[T.any(Symbol, String, T::Array[String]), T.any(String, T::Array[String])],
             block: Proc,
           ).void
         end
-        def task(name, dependencies = {}, &block)
+        def task(name, opts = {}, &block)
+          watches = opts.delete(:watch)
+          dependencies = T.cast(
+            opts.reject { |key, _| key.is_a?(Symbol) },
+            T::Hash[T.any(String, T::Array[String]), T.any(String, T::Array[String])],
+          )
+
           @__tasks << Task.new(
             driver: @__driver,
             name: Task.qualified_name(@__filename, name.to_s),
             filename: @__filename,
             dependencies: dependencies,
+            watches: [watches].flatten.compact,
             file_dsl: self,
             &block
           )

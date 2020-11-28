@@ -8,6 +8,7 @@ require 'spud/cli/parser'
 require 'spud/cli/options'
 require 'spud/task_runners/task'
 require 'spud/task_runners/task_runners'
+require 'spud/task_runners/spud_task_runner/task'
 
 module Spud
   class Driver
@@ -39,18 +40,12 @@ module Spud
         return
       end
 
-      task = T.must(args.task)
       if options.inspect?
-        puts get_task(task).details
+        inspect!
         return
       end
 
-      unless options.watches.empty?
-        watch!
-        return
-      end
-
-      invoke(task, args.ordered, args.named)
+      invoke!
     rescue Error => error
       puts error.message
       raise error if debug?
@@ -61,9 +56,7 @@ module Spud
       raise error if debug?
     end
 
-    sig do
-      params(name: String, ordered: T::Array[String], named: T::Hash[T.any(String, Symbol), String]).returns(T.untyped)
-    end
+    sig {params(name: String, ordered: T::Array[String], named: T::Hash[T.any(String, Symbol), String]).returns(T.untyped)}
     def invoke(name, ordered, named)
       get_task(name).invoke(ordered, stringify_keys(named))
     end
@@ -81,14 +74,31 @@ module Spud
     private
 
     sig {void}
-    def watch!
-      Watch.run!(
-        driver: self,
-        task: T.must(args.task),
-        ordered: args.ordered,
-        named: args.named,
-        watches: options.watches,
-      )
+    def invoke!
+      task_name = T.must(args.task)
+      task = get_task(task_name)
+
+      watches = options.watches
+      watches = task.watches if watches.empty?
+
+      if watches.empty?
+        invoke(task_name, args.ordered, args.named)
+      else
+        raise Error, "watches only supported for Spud tasks" unless task.is_a?(TaskRunners::SpudTaskRunner::Task)
+
+        Watch.run!(
+          driver: self,
+          task: task_name,
+          ordered: args.ordered,
+          named: args.named,
+          watches: watches,
+        )
+      end
+    end
+
+    sig {void}
+    def inspect!
+      puts get_task(T.must(args.task)).details
     end
 
     sig {params(task_name: String).returns(TaskRunners::Task)}

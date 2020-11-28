@@ -1,28 +1,29 @@
 
-publish do |message = nil,  segment: 'patch'|
+publish do |message = '',  segment: 'patch'|
   clean
 
   new_version = invoke!('gem.bump', segment).split('->').last.strip
   puts new_version
   sh 'bundle'
 
-  message ||= "publish #{new_version}"
+  message = "publish #{new_version}" if message.empty?
   sh "git commit -am '#{message}'"
   sh 'git push'
 end
 
-check do
-  spec
-  sorbet
-end
-
-spec do |matcher = '*'|
+spec do |matcher = '*', quiet: 'no'|
   paths = Dir.glob("spec/**/*#{matcher}*.rb")
-  sh "bundle exec rspec #{paths.join(' ')}"
+  format = quiet == 'no' ? '' : '-f f'
+  sh "bundle exec rspec #{format} #{paths.join(' ')}"
 end
 
 sorbet do
   sh 'bundle exec srb'
+end
+
+dev watch: 'lib/**/*.rb' do
+  spec quiet: 'yes'
+  sorbet
 end
 
 create do
@@ -31,5 +32,6 @@ end
 
 clean do
   sh 'rm -rf .byebug_history .rspec_status'
+  invoke 'gem.clean'
   invoke 'sandbox.clean'
 end

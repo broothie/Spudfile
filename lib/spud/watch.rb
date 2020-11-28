@@ -42,6 +42,7 @@ module Spud
     def run!
       thread = T.let(nil, T.nilable(Thread))
 
+      puts "running '#{@task}' on changes to #{@watches.map { |glob| "'#{glob}'" }.join(', ')}"
       loop do
         if watches_changed?
           thread&.kill

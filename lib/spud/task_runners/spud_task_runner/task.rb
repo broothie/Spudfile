@@ -26,6 +26,9 @@ module Spud
         sig {returns(T::Array[Dependency])}
         attr_reader :dependencies
 
+        sig {override.returns(T::Array[String])}
+        attr_reader :watches
+
         sig {override.params(driver: Driver).returns(T::Array[TaskRunners::Task])}
         def self.tasks(driver)
           Dir['Spudfile', '*.spud'].flat_map { |filename| FileDSL.run(driver, filename) }
@@ -50,15 +53,16 @@ module Spud
             name: String,
             filename: String,
             dependencies: T::Hash[T.any(String, T::Array[String]), T.any(String, T::Array[String])],
+            watches: T::Array[String],
             file_dsl: FileDSL,
             block: Proc,
-          )
-          .void
+          ).void
         end
-        def initialize(driver:, name:, filename:, dependencies:, file_dsl:, &block)
+        def initialize(driver:, name:, filename:, dependencies:, watches:, file_dsl:, &block)
           @driver = driver
           @name = name
           @filename = filename
+          @watches = watches
           @dependencies = dependencies.map { |to, from| Dependency.new(to, from) }
           @file_dsl = file_dsl
           @block = block
