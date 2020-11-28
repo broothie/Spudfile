@@ -26,7 +26,7 @@ end
 
 # Prints current local version
 version do
-  p Spud::VERSION
+  p File.read('lib/spud/version.rb').match(/\d+\.\d+\.\d+/).to_s
 end
 
 # Prints currently pushed gem version
@@ -46,8 +46,8 @@ check_changed do
 end
 
 semver_greater? do |a, b|
-  a_major, a_minor, a_patch = a.split('.')
-  b_major, b_minor, b_patch = b.split('.')
+  a_major, a_minor, a_patch = a.split('.').map(&:to_i)
+  b_major, b_minor, b_patch = b.split('.').map(&:to_i)
 
   halt false if a_major < b_major
   halt false if a_minor < b_minor
